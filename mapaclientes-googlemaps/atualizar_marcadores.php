@@ -32,8 +32,13 @@ if ($json === false) {
                 $nome = $cadastro->nome;
                 $online = $cadastro->online;
                 $statusIcon = ($online == true) ? 'images/green-icon.png' : 'images/red-icon.png';
+				$nasPortId = null; // Inicialize como null
 
-                $clientData[] = ["latitude" => $latitude, "longitude" => $longitude, "nome" => $nome, "statusIcon" => $statusIcon];
+				// Verifique se há dados no array radacct
+				if (isset($cadastro->radacct) && is_array($cadastro->radacct) && count($cadastro->radacct) > 0) {
+					$nasPortId = $cadastro->radacct[0]->nasportid;
+				}
+                $clientData[] = ["latitude" => $latitude, "longitude" => $longitude, "nome" => $nome, "statusIcon" => $statusIcon, "vlan" => $nasPortId];
             }
         }
     } else {
