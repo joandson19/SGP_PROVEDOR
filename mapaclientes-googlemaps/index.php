@@ -81,7 +81,7 @@
 					title: data[i].nome
 				});
 
-				var content = "<div><strong>" + data[i].nome + "</strong></div>";
+				var content = "<div><strong>" + data[i].nome + "</strong><br>Vlan: " + data[i].vlan + "</div>";
 				marker.addListener("click", (function(marker, content) {
 					return function() {
 						infowindow.setContent(content);
