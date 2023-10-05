@@ -17,4 +17,7 @@ $app = "APP";
 // Dados de pesquisa
 $status = "ATIVO";
 $uf = "BA"; // Altere para uf do estado do pop
+
+// Porta de acesso aos roteadores
+$port = "9090";
 ?>
