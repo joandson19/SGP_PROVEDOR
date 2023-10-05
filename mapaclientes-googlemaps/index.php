@@ -81,7 +81,7 @@
 					title: data[i].nome
 				});
 
-				var content = "<div><strong>" + data[i].nome + "</strong><br>Vlan: " + data[i].vlan + "<br>Última conexão: " + data[i].acct + "<br>IP: <a target='_blank' href=http://" + data[i].ip + ">" + data[i].ip + "</a></div>";
+				var content = "<div><strong>" + data[i].nome + "</strong><br>Vlan: " + data[i].vlan + "<br>Última conexão: " + data[i].acct + "<br>IP: <a target='_blank' href=http://" + data[i].ip + ":<?php echo $port; ?>>" + data[i].ip + "</a></div>";
 				marker.addListener("click", (function(marker, content) {
 					return function() {
 						infowindow.setContent(content);
