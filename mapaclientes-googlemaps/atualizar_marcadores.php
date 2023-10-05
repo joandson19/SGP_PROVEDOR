@@ -29,7 +29,7 @@ if ($json === false) {
             if (isset($cadastro->endereco_longitude) && isset($cadastro->endereco_latitude)) {
                 $longitude = $cadastro->endereco_longitude;
                 $latitude = $cadastro->endereco_latitude;
-                $nome = $cadastro->nome;
+				$nome = $cadastro->nome;
                 $online = $cadastro->online;
                 $statusIcon = ($online == true) ? 'images/green-icon.png' : 'images/red-icon.png';
 				$nasPortId = null; // Inicialize como null
@@ -37,8 +37,10 @@ if ($json === false) {
 				// Verifique se há dados no array radacct
 				if (isset($cadastro->radacct) && is_array($cadastro->radacct) && count($cadastro->radacct) > 0) {
 					$nasPortId = $cadastro->radacct[0]->nasportid;
+					$acctime = $cadastro->radacct[0]->acctstarttime;
+					$ip = $cadastro->radacct[0]->framedipaddress;
 				}
-                $clientData[] = ["latitude" => $latitude, "longitude" => $longitude, "nome" => $nome, "statusIcon" => $statusIcon, "vlan" => $nasPortId];
+                $clientData[] = ["latitude" => $latitude, "longitude" => $longitude, "nome" => $nome, "statusIcon" => $statusIcon, "vlan" => $nasPortId, "acct" => $acctime, "ip" => $ip];
             }
         }
     } else {
