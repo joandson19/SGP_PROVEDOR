@@ -1,8 +1,62 @@
-/* Estilos responsivos para o mapa */
+/* Estilos para o mapa */
 #map {
     width: 100%;
     height: 100vh; /* Altura relativa à viewport */
     position: relative;
+}
+
+/* Estilos para a barra de busca e botões */
+#search-container {
+    position: absolute;
+    bottom: 20px;
+    left: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    z-index: 1000; /* Para garantir que a barra fique acima do mapa */
+}
+
+#search-input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+#search-input:focus {
+    border-color: #3498db;
+}
+
+#search-button, #manual-update-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#search-button:hover, #manual-update-btn:hover {
+    background-color: #2980b9;
+}
+
+#manual-update-btn {
+    margin-left: 10px; /* Para separá-lo visualmente */
+}
+
+/* Estilo de carregamento */
+#loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 2000; /* Para garantir que o carregamento esteja no topo */
 }
 
 /* Estilos responsivos para pop-ups */
@@ -19,50 +73,25 @@
     height: 32px;
 }
 
-/* Estilos para o botão de atualização manual */
-#manual-update-btn {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    z-index: 1000; /* Aumenta a sobreposição para ficar acima do mapa */
-}
-
+/* Efeito visual quando o botão de atualização está carregando */
 #manual-update-btn.loading {
     background-color: #666;
-}
-/* Estilos para telas menores, por exemplo, largura até 600px */
-@media screen and (max-width: 600px) {
-    #manual-update-btn {
-        padding: 5px 10px; /* Reduzir o padding para telas menores */
-        font-size: 12px; /* Reduzir o tamanho da fonte para telas menores */
-    }
-}
-/* Estilo para o campo de busca e botão */
-#search-input {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-right: 10px;
-    position: absolute;
-    bottom: 10px;
-    left: 10px; /* Ajusta a posição para acomodar o botão */
+    cursor: not-allowed;
 }
 
-#search-button {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    position: absolute;
-    bottom: 10px;
-    left: 200px;
+/* Estilos para telas menores */
+@media screen and (max-width: 600px) {
+    #search-input {
+        width: 120px; /* Reduz o tamanho do campo de busca */
+        font-size: 14px;
+    }
+
+    #search-button, #manual-update-btn {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    #manual-update-btn {
+        bottom: 50px; /* Evita sobreposição ao campo de busca em telas pequenas */
+    }
 }
