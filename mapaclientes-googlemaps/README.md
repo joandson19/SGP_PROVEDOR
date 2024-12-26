@@ -1,6 +1,8 @@
 ## Leia atentamente.
 
-## Esse projeto além e ter um mapa de clientes ativos "online ou offline" no SGP, também conta com um mapa de CTOs ativas no SGP com informações basicas das CTOs como nome, número de portas, quais portas estão sendo usadas, comentários e etc.
+## Esse projeto além e ter um mapa de clientes ativos "online ou offline" no SGP, também conta com um mapa de CTOs ativas no SGP com informações basicas das CTOs como nome, número de portas, quais portas estão sendo usadas, comentários e etc.+
+
+#### Vídeo: https://youtu.be/eDK37tSjgfQ
 
 ### Passos:
 ### * 1º: Antes de seguir para o script acesse o https://console.cloud.google.com/, crie sua api e credenciais, adicione o MAPS e vá em "APIs e serviços" e ative o "Directions API" para podermos usar o traçado de rotas.
