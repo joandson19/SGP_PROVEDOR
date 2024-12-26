@@ -172,7 +172,7 @@ if (!isset($_GET['token']) || $_GET['token'] !== $validToken) {
 <script>
     // Função para redirecionar para o link desejado
     function redirectToNewTable() {
-		window.open("cto.php", "_blank");
+		window.open("cto/index.php", "_blank");
     }
 </script>
 </body>
