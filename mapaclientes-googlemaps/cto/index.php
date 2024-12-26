@@ -101,7 +101,7 @@ if (!$ctos || !is_array($ctos)) {
 					position: clickedLocation,
 					map: map,
 					icon: {
-						url: 'images/green-icon.png',
+						url: '../images/green-icon.png',
 						scaledSize: new google.maps.Size(30, 30),
 						origin: new google.maps.Point(0, 0),
 						anchor: new google.maps.Point(15, 15)
