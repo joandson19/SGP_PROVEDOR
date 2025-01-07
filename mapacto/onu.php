@@ -37,42 +37,15 @@ if (!$data || !is_array($data)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="css/style.css"> <!-- Adiciona o link para o CSS -->
     <title>Informações de RX e Clientes</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #007bff;
-            color: #fff;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-    </style>
 </head>
 <body>
     <h1>Informações de RX e Clientes</h1>
     <table>
         <thead>
             <tr>
-                <th>Porta</th>
+				<th>Porta</th>
                 <th>Cliente</th>
                 <th>Info RX</th>
             </tr>
@@ -81,7 +54,7 @@ if (!$data || !is_array($data)) {
             <?php foreach ($data as $onu): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($onu['ctoport'] ?? 'N/A'); ?></td>
-                    <td><?php echo htmlspecialchars($onu['service_cliente'] ?? 'N/A') . ' → ' . htmlspecialchars($onu['service_contrato'] ?? 'N/A'); ?></td>
+					<td><?php echo htmlspecialchars($onu['service_cliente'] ?? 'N/A') . ' → ' . htmlspecialchars($onu['service_contrato'] ?? 'N/A'); ?></td>
                     <td><?php echo htmlspecialchars($onu['info_rx'] ?? 'N/A'); ?></td>
                 </tr>
             <?php endforeach; ?>
