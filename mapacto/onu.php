@@ -72,7 +72,7 @@ if (!$data || !is_array($data)) {
     <table>
         <thead>
             <tr>
-				<th>Porta</th>
+                <th>Porta</th>
                 <th>Cliente</th>
                 <th>Info RX</th>
             </tr>
@@ -81,7 +81,7 @@ if (!$data || !is_array($data)) {
             <?php foreach ($data as $onu): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($onu['ctoport'] ?? 'N/A'); ?></td>
-					<td><?php echo htmlspecialchars($onu['service_cliente'] ?? 'N/A') . ' → ' . htmlspecialchars($onu['service_contrato'] ?? 'N/A'); ?></td>
+                    <td><?php echo htmlspecialchars($onu['service_cliente'] ?? 'N/A') . ' → ' . htmlspecialchars($onu['service_contrato'] ?? 'N/A'); ?></td>
                     <td><?php echo htmlspecialchars($onu['info_rx'] ?? 'N/A'); ?></td>
                 </tr>
             <?php endforeach; ?>
