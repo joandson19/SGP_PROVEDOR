@@ -55,7 +55,7 @@ if (!$data || !is_array($data)) {
                 <tr>
                     <td><?php echo htmlspecialchars($onu['ctoport'] ?? 'N/A'); ?></td>
 					<td><?php echo htmlspecialchars($onu['service_cliente'] ?? 'N/A') . ' → ' . htmlspecialchars($onu['service_contrato'] ?? 'N/A'); ?></td>
-                    <td><?php echo htmlspecialchars($onu['info_rx'] ?? 'N/A'); ?></td>
+                    <td style="color: <?php echo ($onu['info_rx'] ?? 'N/A') <= -23 ? 'red' : 'green'; ?>"><?php echo htmlspecialchars($onu['info_rx'] ?? 'N/A'); ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
