@@ -70,6 +70,11 @@ if (!$ctos || !is_array($ctos)) {
 
                     // Armazena a localização e o marcador
                     ctoLocations.push({ lat, lng, marker });
+					
+			// Mostrar botão de ver sinal caso a CTO tenha cliente, se não tiver o botão não aparecerá.		
+			const buttonHTML = cto.busy_ports && cto.busy_ports.length > 0 
+				? `<button id="new-table-btn" onclick="redirectToOnu(${cto.id})">Ver Sinal</button>` 
+				: '';	
 
                     // Adiciona o conteúdo do balão de informações
                     const infoWindow = new google.maps.InfoWindow({
@@ -80,8 +85,7 @@ if (!$ctos || !is_array($ctos)) {
                                 <p><strong>Portas ocupadas:</strong><font color="red"> ${cto.busy_ports ? cto.busy_ports.join(', ') : 'Nenhuma'}</font></p>
                                 <p><strong>Observações:</strong> ${cto.note || 'Nenhuma'}</p>
 								<p><strong>OLT PON:</strong> ${cto.pon}</p>
-							<!--	<p><strong>ID:</strong><a href="onu.php?cto=${cto.id}" target="_blank">${cto.id}</a></p> -->
-								<button id="new-table-btn" onclick="redirectToOnu(${cto.id})">Ver Sinal</button>
+								${buttonHTML}
                             </div>
                         `
                     });
@@ -133,7 +137,7 @@ if (!$ctos || !is_array($ctos)) {
 						const request = {
 							origin: clickedLocation,
 							destination: new google.maps.LatLng(location.lat, location.lng),
-							travelMode: google.maps.TravelMode.DRIVING
+							travelMode: google.maps.TravelMode.WALKING
 						};
 
 						return new Promise((resolve, reject) => {
@@ -229,13 +233,24 @@ if (!$ctos || !is_array($ctos)) {
                 }
             });
         }
+
     </script>
 </head>
+
 <body onload="initMap()">
     <div id="map" style="height: 100vh;"></div>
 	<div id="search-container">
     <!-- Botão para limpar medições -->
     <button id="new-table-btn" onclick="clearMeasurements()">Limpar Medições</button>
+	<!-- Adicione o novo botão de redirecionamento -->
+	<button id="new-table-btn" onclick="redirectTocoveragemap()">Mapa de Cobertura</button>
 	</div>
+	
+<script>
+	// Função para redirecionar para o link desejado
+    function redirectTocoveragemap() {
+		window.open("https://www.alagoinhastelecom.com.br/mapacto/cobertura.php", "_blank");
+    }
+</script>
 </body>
 </html>
