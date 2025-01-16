@@ -72,7 +72,7 @@ if (!$ctos || !is_array($ctos)) {
                     ctoLocations.push({ lat, lng, marker });
 					
 			// Mostrar botão de ver sinal caso a CTO tenha cliente, se não tiver o botão não aparecerá.		
-			const buttonHTML = cto.busy_ports && cto.busy_ports.length > 0 
+			const buttonHTML = cto.onu_count > 0
 				? `<button id="new-table-btn" onclick="redirectToOnu(${cto.id})">Ver Sinal</button>` 
 				: '';	
 
@@ -84,8 +84,8 @@ if (!$ctos || !is_array($ctos)) {
                                 <p><strong>Número de Portas:</strong> ${cto.ports}</p>
                                 <p><strong>Portas ocupadas:</strong><font color="red"> ${cto.busy_ports ? cto.busy_ports.join(', ') : 'Nenhuma'}</font></p>
                                 <p><strong>Observações:</strong> ${cto.note || 'Nenhuma'}</p>
-								<p><strong>OLT PON:</strong> ${cto.pon}</p>
-								${buttonHTML}
+				<p><strong>OLT PON:</strong> ${cto.pon}</p>
+				${buttonHTML}
                             </div>
                         `
                     });
