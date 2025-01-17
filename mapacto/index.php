@@ -8,7 +8,7 @@ if (!isset($_SESSION['validated']) || $_SESSION['validated'] !== true) {
     exit;
 }
 // API URL
-$url = "$url/api/fttx/splitter/all/?token=$token&app=$app";
+$url = "$url/api/fttx/splitter/all/?show_busy_ports=1&token=$token&app=$app";
 
 // Inicia o cURL para obter os dados
 $ch = curl_init($url);
@@ -70,11 +70,11 @@ if (!$ctos || !is_array($ctos)) {
 
                     // Armazena a localização e o marcador
                     ctoLocations.push({ lat, lng, marker });
-					
+
 			// Mostrar botão de ver sinal caso a CTO tenha cliente, se não tiver o botão não aparecerá.		
-			const buttonHTML = cto.onu_count > 0
+			const buttonHTML = cto.onu_count > 0 
 				? `<button id="new-table-btn" onclick="redirectToOnu(${cto.id})">Ver Sinal</button>` 
-				: '';	
+				: '';
 
                     // Adiciona o conteúdo do balão de informações
                     const infoWindow = new google.maps.InfoWindow({
@@ -82,10 +82,10 @@ if (!$ctos || !is_array($ctos)) {
                             <div>
                                 <h2>➡ ${cto.ident} ⬅</h2>
                                 <p><strong>Número de Portas:</strong> ${cto.ports}</p>
-                                <p><strong>Portas ocupadas:</strong><font color="red"> ${cto.busy_ports ? cto.busy_ports.join(', ') : 'Nenhuma'}</font></p>
+                                <p><strong>Portas ocupadas:</strong><font color="red"> ${cto.busy_ports && cto.busy_ports.length > 0 ? cto.busy_ports.join(', ') : 'Nenhuma'}</font></p>
                                 <p><strong>Observações:</strong> ${cto.note || 'Nenhuma'}</p>
-				<p><strong>OLT PON:</strong> ${cto.pon}</p>
-				${buttonHTML}
+								<p><strong>OLT PON:</strong> ${cto.pon}</p>
+								${buttonHTML}
                             </div>
                         `
                     });
