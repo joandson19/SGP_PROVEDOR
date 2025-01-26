@@ -16,14 +16,6 @@ Este projeto é uma aplicação web simples para o Pré-cadastro de clientes, co
 - Feedback visual para envios bem-sucedidos e mensagens de erro.
 - Redirecionamento para uma página de sucesso após o cadastro.
 
-## 📂 Estrutura do Projeto
-.├── index.html # Página principal com o formulário de cadastro 
-├── cadastro-sucesso.html # Página exibida após o envio bem-sucedido 
-├── styles.css # Arquivo de estilos (CSS) 
-├── config.js # Configurações de API (URL, app, token) 
-├── submitForm.js # Lógica de envio e validação do formulário 
-
-
 ## 🚀 Como Usar
 
 ### 1. Clonar o Repositório
