@@ -1,4 +1,4 @@
-# Formulário de Cadastro de Clientes
+# Formulário de Pré Cadastro de Clientes
 
 Este projeto é uma aplicação web simples para o Pré-cadastro de clientes, com validação de campos e integração com uma API [SGP](https://www.tsmx.net.br/sgp/). A aplicação foi projetada para ser responsiva e funcional em dispositivos móveis e navegadores modernos.
 
