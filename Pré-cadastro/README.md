@@ -17,8 +17,7 @@ Este projeto é uma aplicação web simples para o Pré-cadastro de clientes, co
 - Redirecionamento para uma página de sucesso após o cadastro.
 
 ## 📂 Estrutura do Projeto
-
-├── index.html # Página principal com o formulário de cadastro 
+.├── index.html # Página principal com o formulário de cadastro 
 ├── cadastro-sucesso.html # Página exibida após o envio bem-sucedido 
 ├── styles.css # Arquivo de estilos (CSS) 
 ├── config.js # Configurações de API (URL, app, token) 
