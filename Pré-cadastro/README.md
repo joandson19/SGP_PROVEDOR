@@ -25,3 +25,7 @@ Clone o projeto para sua máquina local
 
 ### 2. Configuração
 Edite o arquivo config.js para definir a URL da API e o TOKEN de autenticação:
+
+## Segue imagem.
+![image](https://github.com/user-attachments/assets/7803b9e3-6137-490a-8099-2610a1d133a6)
+
