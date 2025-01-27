@@ -11,6 +11,8 @@ Este projeto é uma aplicação web simples para o Pré-cadastro de clientes, co
   - Celular
   - Endereço
   - Plano e dia de vencimento <-> Coletados na API do SGP
+  - Envio de coordenadas geográficas direto no Formulário.
+    
 - Validação de CPF e CNPJ diretamente no front-end.
 - Preenchimento dinâmico de opções de planos e vencimentos a partir de uma API.
 - Feedback visual para envios bem-sucedidos e mensagens de erro.
