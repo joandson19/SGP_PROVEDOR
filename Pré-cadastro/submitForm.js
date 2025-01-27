@@ -1,3 +1,29 @@
+const fetchVendedores = async () => {
+    try {
+        // Requisição para obter a lista de vendedores
+        const vendedoresResponse = await fetch(`${CONFIG.apiUrl}/api/precadastro/vendedor/list`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ app: CONFIG.app, token: CONFIG.token })
+        });
+
+        const vendedores = await vendedoresResponse.json();
+
+        // Preencher o campo select com a lista de vendedores
+        const vendedorSelect = document.getElementById('vendedor');
+        vendedores.forEach(vendedor => {
+            const option = document.createElement('option');
+            option.value = vendedor.id;
+            option.textContent = vendedor.nome;
+            vendedorSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Erro ao buscar vendedores:', error);
+    }
+};
+
+fetchVendedores();
+
 const fetchData = async () => {
 	try {
 		// Fetch planos
@@ -162,6 +188,12 @@ document.addEventListener('DOMContentLoaded', () => {
         submitButton.textContent = 'Enviando...'; // Feedback visual opcional
 
         const formData = new FormData(form);
+		
+		// Formatar a data de nascimento
+		const datanascInput = document.getElementById('datanasc').value;
+		if (datanascInput) {
+			formData.set('datanasc', datanascInput); // Garante que o formato seja "YYYY-MM-DD"
+		}
 
         // Converte os dados do formulário em um objeto JSON
         const formDataObject = {};
