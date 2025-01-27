@@ -147,37 +147,52 @@ document.getElementById('cpfcnpj').addEventListener('blur', function () {
 // Manipulador de envio do formulário
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registrationForm');
-    const mapContainer = document.getElementById('map_ll');
+    const enableMapCheckbox = document.getElementById('enableMap');
+    const mapContainer = document.getElementById('mapContainer');
     const mapElement = document.getElementById('map');
+    const mapInput = document.getElementById('map_ll');
 
-    // Inicializar o mapa no Leaflet
-    const [latitude, longitude] = CONFIG.coordenadasIni.split(',').map(Number);
-	const map = L.map(mapElement).setView([latitude, longitude], 14);
+    let map; // Variável para armazenar o mapa
+    let marker; // Variável para armazenar o marcador
 
-    // Adicionar camada de mapa (OpenStreetMap)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
+    enableMapCheckbox.addEventListener('change', () => {
+        if (enableMapCheckbox.checked) {
+            mapContainer.style.display = 'block';
 
-    // Adicionar marcador e permitir arrastar
-    const marker = L.marker([-12.135586, -38.419486], { draggable: true }).addTo(map);
+            if (!map) {
+                // Inicializar o mapa no Leaflet se ainda não foi criado
+                const [latitude, longitude] = CONFIG.coordenadasIni.split(',').map(Number);
+                map = L.map(mapElement).setView([latitude, longitude], 14);
 
-    // Atualizar as coordenadas no campo oculto quando o marcador for arrastado
-    marker.on('dragend', () => {
-        const { lat, lng } = marker.getLatLng();
-        const coordinates = `${lat.toFixed(6)},${lng.toFixed(6)}`;
-        mapContainer.value = coordinates; // Salva no campo oculto
+                // Adicionar camada de mapa
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 18,
+                    attribution: '© OpenStreetMap'
+                }).addTo(map);
+
+                // Adicionar marcador
+                marker = L.marker([latitude, longitude], { draggable: true }).addTo(map);
+
+                // Atualizar as coordenadas no campo oculto quando o marcador for arrastado
+                marker.on('dragend', () => {
+                    const { lat, lng } = marker.getLatLng();
+                    const coordinates = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+                    mapInput.value = coordinates; // Salva no campo oculto
+                });
+
+                // Atualizar a posição do marcador ao clicar no mapa
+                map.on('click', (e) => {
+                    const { lat, lng } = e.latlng;
+                    marker.setLatLng([lat, lng]);
+                    const coordinates = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+                    mapInput.value = coordinates; // Salva no campo oculto
+                });
+            }
+        } else {
+            mapContainer.style.display = 'none';
+            mapInput.value = ''; // Limpa o campo de coordenadas
+        }
     });
-
-    // Atualizar a posição do marcador ao clicar no mapa
-    map.on('click', (e) => {
-        const { lat, lng } = e.latlng;
-        marker.setLatLng([lat, lng]);
-        const coordinates = `${lat.toFixed(6)},${lng.toFixed(6)}`;
-        mapContainer.value = coordinates; // Salva no campo oculto
-    });
-
     // Manipulador de envio do formulário
     form.addEventListener('submit', async (event) => {
         event.preventDefault(); // Impede o envio padrão do formulário

@@ -76,11 +76,16 @@
 				<option value="">Selecione um vendedor...</option>
 			</select>
 		</div>
-		<div class="map-container">
-			<label for="map">Localização</label>
+		<div>
+			<label for="enableMap">
+				<input type="checkbox" id="enableMap"> Informar localização!
+			</label>
+		</div>
+		<div id="mapContainer" style="display: none; margin-top: 10px;">
 			<div id="map" style="height: 400px; border: 1px solid #ccc; border-radius: 5px;"></div>
 			<input type="hidden" id="map_ll" name="map_ll">
 		</div>
+
         <button type="submit">Cadastrar</button>
     </form>
 </div>

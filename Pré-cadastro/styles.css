@@ -99,3 +99,15 @@ a:hover {
     border: 1px solid #ccc;
     border-radius: 5px;
 }
+label[for="enableMap"] {
+    display: flex;
+    align-items: center;
+    gap: 2px; /* Espaço entre o checkbox e o texto */
+    font-weight: bold; /* Opcional: destaque no texto */
+    /*cursor: pointer; Facilita o clique no texto para ativar o checkbox */
+}
+
+input#enableMap {
+    margin: 0; /* Remove espaçamento padrão do checkbox */
+    accent-color: #007BFF; /* Cor do checkbox nos navegadores modernos */
+}
