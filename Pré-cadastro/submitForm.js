@@ -119,53 +119,87 @@ document.getElementById('cpfcnpj').addEventListener('blur', function () {
 });
 
 // Manipulador de envio do formulário
-const form = document.getElementById('registrationForm');
-form.addEventListener('submit', async (event) => {
-	event.preventDefault();  // Impede o envio padrão do formulário
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('registrationForm');
+    const mapContainer = document.getElementById('map_ll');
+    const mapElement = document.getElementById('map');
 
-	// Desativa o botão para evitar envios duplicados
-	const submitButton = form.querySelector('button[type="submit"]');
-	submitButton.disabled = true;
-	submitButton.textContent = 'Enviando...'; // Feedback visual opcional
+    // Inicializar o mapa no Leaflet
+    const [latitude, longitude] = CONFIG.coordenadasIni.split(',').map(Number);
+	const map = L.map(mapElement).setView([latitude, longitude], 14);
 
-	const formData = new FormData(form);
+    // Adicionar camada de mapa (OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
 
-	// Converta os dados do formulário em um objeto JSON
-	const formDataObject = {};
-	formData.forEach((value, key) => {
-		formDataObject[key] = value;
-	});
+    // Adicionar marcador e permitir arrastar
+    const marker = L.marker([-12.135586, -38.419486], { draggable: true }).addTo(map);
 
-	// Adiciona app e token aos dados do formulário
-	const dataToSend = {
-		...formDataObject,  // Adiciona todos os dados do formulário
-		app: CONFIG.app,
-		token: CONFIG.token
-	};
+    // Atualizar as coordenadas no campo oculto quando o marcador for arrastado
+    marker.on('dragend', () => {
+        const { lat, lng } = marker.getLatLng();
+        const coordinates = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+        mapContainer.value = coordinates; // Salva no campo oculto
+    });
 
-	try {
-		// Envio dos dados do formulário para a API
-		const response = await fetch(`${CONFIG.apiUrl}/api/precadastro/F`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(dataToSend)  // Envia o objeto correto
-		});
+    // Atualizar a posição do marcador ao clicar no mapa
+    map.on('click', (e) => {
+        const { lat, lng } = e.latlng;
+        marker.setLatLng([lat, lng]);
+        const coordinates = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+        mapContainer.value = coordinates; // Salva no campo oculto
+    });
 
-		if (response.ok) {
-			// Sucesso
-			alert('Cadastro realizado com sucesso!');
-			// Redireciona para a página de sucesso
-			window.location.href = 'cadastro-sucesso.html';
-		} else {
-			// Falha
-			alert('Erro ao cadastrar. Tente novamente.');
-		}
-	} catch (error) {
-		console.error('Erro ao enviar o formulário:', error);
-		alert('Erro de conexão. Tente novamente.');
-	} finally {
-		// Reativa o botão após a tentativa de envio
-		submitButton.disabled = false;
-		submitButton.textContent = 'Cadastrar'; // Restaura o texto original
-	}
+    // Manipulador de envio do formulário
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Impede o envio padrão do formulário
+
+        // Desativa o botão para evitar envios duplicados
+        const submitButton = form.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Enviando...'; // Feedback visual opcional
+
+        const formData = new FormData(form);
+
+        // Converte os dados do formulário em um objeto JSON
+        const formDataObject = {};
+        formData.forEach((value, key) => {
+            formDataObject[key] = value;
+        });
+
+        // Adiciona app e token aos dados do formulário
+        const dataToSend = {
+            ...formDataObject, // Adiciona todos os dados do formulário
+            app: CONFIG.app,
+            token: CONFIG.token
+        };
+
+        try {
+            // Envio dos dados do formulário para a API
+            const response = await fetch(`${CONFIG.apiUrl}/api/precadastro/F`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dataToSend) // Envia o objeto correto
+            });
+
+            if (response.ok) {
+                // Sucesso
+                alert('Cadastro realizado com sucesso!');
+                // Redireciona para a página de sucesso
+                window.location.href = 'cadastro-sucesso.html';
+            } else {
+                // Falha
+                alert('Erro ao cadastrar. Tente novamente.');
+            }
+        } catch (error) {
+            console.error('Erro ao enviar o formulário:', error);
+            alert('Erro de conexão. Tente novamente.');
+        } finally {
+            // Reativa o botão após a tentativa de envio
+            submitButton.disabled = false;
+            submitButton.textContent = 'Cadastrar'; // Restaura o texto original
+        }
+    });
 });
