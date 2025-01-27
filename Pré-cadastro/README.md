@@ -10,6 +10,7 @@ Este projeto é uma aplicação web simples para o Pré-cadastro de clientes, co
   - E-mail
   - Celular
   - Endereço
+  - Data de nascimento
   - Plano e dia de vencimento <-> Coletados na API do SGP
   - Envio de coordenadas geográficas direto no Formulário.
     
