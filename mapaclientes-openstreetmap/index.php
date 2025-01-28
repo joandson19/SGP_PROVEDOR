@@ -3,7 +3,7 @@
 <head>
     <title>Mapa dos Clientes</title>
     <!-- Inclua o CSS do Leaflet -->
-    <link rel="stylesheet" href="css/leaflet.css" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -13,7 +13,7 @@
 
 <div id="map"></div>
 
-<script src="css/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -33,7 +33,7 @@
 		document.getElementById('loading').style.display = 'block';
 
 		$.ajax({
-			url: 'atualizar_marcadores.php?mptoken=<?php echo $validToken; ?>',
+			url: 'atualizar_marcadores.php',
 			dataType: 'json',
 			success: function(data) {
 				var highlightedPopupContent = null;
@@ -88,21 +88,34 @@
 
 	// Função para adicionar marcadores com base nos dados
 	function addMarkers(data) {
-		clearMarkers();
+		clearMarkers(); // Limpa marcadores existentes, se necessário.
 
 		for (var i = 0; i < data.length; i++) {
 			if (data[i].latitude !== "" && data[i].longitude !== "") {
 				var statusIconUrl = data[i].statusIcon;
 				var markerIcon = L.icon({
 					iconUrl: statusIconUrl,
-					iconSize: [32, 32],
-					iconAnchor: [16, 32]
+					iconSize: [32, 32],       // Tamanho do ícone
+					iconAnchor: [16, 32]      // Ponto de ancoragem do ícone
 				});
 
 				var marker = L.marker([data[i].latitude, data[i].longitude], { icon: markerIcon }).addTo(map);
-				marker.bindPopup(data[i].nome, { offset: L.point(0, -20) });
 
-				markers.push(marker);
+				// Configuração do conteúdo da popup
+				var content = `
+					<div>
+						<strong>${data[i].nome}</strong><br>
+						Vlan: ${data[i].vlan}<br>
+						Última conexão: ${data[i].acct}<br>
+						<span style='color: red;'>Última desconexão:</span> ${data[i].stop}<br>
+						IP: <a target='_blank' href="http://${data[i].ip}:<?php echo $port; ?>">${data[i].ip}</a>
+					</div>
+				`;
+
+				// Adiciona o conteúdo à popup
+				marker.bindPopup(content, { offset: L.point(0, -20) });
+
+				markers.push(marker); // Adiciona o marcador à lista de marcadores
 			}
 		}
 	}

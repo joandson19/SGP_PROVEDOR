@@ -1,13 +1,10 @@
 <?php
 require_once("config/conf.php");
 
-// Verificar se o token fornecido na solicitação é válido
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['mptoken']) && $_GET['mptoken'] === $validToken) {
-	
 $data = array("app" => "$app", "token" => "$token", "limit" => 999, "uf" => "$uf", "status" => "$status", "last_session" => true );
 $data_string = json_encode($data);
 
-$ch = curl_init($link);
+$ch = curl_init($url . '/ws/radius/radacct/list/all/');
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -29,7 +26,7 @@ if ($json === false) {
             if (isset($cadastro->endereco_longitude) && isset($cadastro->endereco_latitude)) {
                 $longitude = $cadastro->endereco_longitude;
                 $latitude = $cadastro->endereco_latitude;
-                $nome = $cadastro->nome;
+				$nome = $cadastro->nome;
                 $online = $cadastro->online;
                 $statusIcon = ($online == true) ? 'images/green-icon.png' : 'images/red-icon.png';
 				$nasPortId = null; // Inicialize como null
@@ -37,8 +34,11 @@ if ($json === false) {
 				// Verifique se há dados no array radacct
 				if (isset($cadastro->radacct) && is_array($cadastro->radacct) && count($cadastro->radacct) > 0) {
 					$nasPortId = $cadastro->radacct[0]->nasportid;
+					$acctime = $cadastro->radacct[0]->acctstarttime;
+					$stoptime = $cadastro->radacct[0]->acctstoptime;
+					$ip = $cadastro->radacct[0]->framedipaddress;
 				}
-                $clientData[] = ["latitude" => $latitude, "longitude" => $longitude, "nome" => $nome, "statusIcon" => $statusIcon, "vlan" => $nasPortId];
+                $clientData[] = ["latitude" => $latitude, "longitude" => $longitude, "nome" => $nome, "statusIcon" => $statusIcon, "vlan" => $nasPortId, "acct" => $acctime, "stop" => $stoptime, "ip" => $ip];
             }
         }
     } else {
@@ -48,9 +48,5 @@ if ($json === false) {
     curl_close($ch);
     echo json_encode($clientData);
 }
-} else {
-    // Se o token não for válido, retornar um erro ou uma resposta adequada
-    http_response_code(403); // Código de resposta "Proibido"
-    echo "Acesso não autorizado.";
-}
+
 ?>
