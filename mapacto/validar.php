@@ -21,7 +21,7 @@ if (isset($_SESSION['validated']) && $_SESSION['validated'] === true) {
     <!-- Inclusão do script do Turnstile -->
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
-<body>
+<body class="validar-page">
 
     <div class="captcha-container">
         <h2>Prove que não é um robô:</h2>
