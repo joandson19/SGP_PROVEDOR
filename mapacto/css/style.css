@@ -1,19 +1,46 @@
-/* Estilos para o mapa */
+/* ===== Estilos gerais ===== */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+/* Pagina de validação */
+body.validar-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f5f5f5;
+}
+
+/* Ajuste para a caixa de validação */
+.captcha-container {
+    text-align: center;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+/* ===== Estilo para o Mapa ===== */
 #map {
     width: 100%;
-    height: 100vh; /* Altura relativa à viewport */
+    height: 100vh;
     position: relative;
 }
 
-/* Estilos para a barra de busca e botões */
+/* ===== Barra de Busca e Botões ===== */
 #search-container {
     position: absolute;
     bottom: 20px;
     left: 10px;
     display: flex;
-    gap: 10px; /* Espaço entre os botões */
-    align-items: center; /* Alinha os itens verticalmente no centro */
-    z-index: 1000; /* Para garantir que a barra fique acima do mapa */
+    gap: 10px;
+    align-items: center;
+    z-index: 1000;
 }
 
 #search-input {
@@ -21,7 +48,7 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     outline: none;
-    width: 150px; /* Largura fixa para o campo de busca */
+    width: 150px;
 }
 
 #search-input:focus {
@@ -42,7 +69,7 @@
     background-color: #2980b9;
 }
 
-/* Estilo de carregamento */
+/* ===== Estilo de carregamento ===== */
 #loading {
     position: absolute;
     top: 50%;
@@ -52,15 +79,54 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 2000; /* Para garantir que o carregamento esteja no topo */
+    z-index: 2000;
 }
 
-/* Estilos responsivos para pop-ups */
+/* ===== Estilos para Tabelas de ONU ===== */
+h1 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #007bff;
+    color: #fff;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* ===== Estilos responsivos para pop-ups ===== */
 .leaflet-popup-content-wrapper {
     max-width: 200px;
 }
 
-/* Estilos responsivos para marcadores */
+/* ===== Estilos responsivos para marcadores ===== */
 .leaflet-marker-icon {
     display: block;
     margin-left: auto;
@@ -69,16 +135,16 @@
     height: 32px;
 }
 
-/* Efeito visual quando o botão de atualização está carregando */
+/* ===== Efeito visual ao carregar atualização ===== */
 #manual-update-btn.loading {
     background-color: #666;
     cursor: not-allowed;
 }
 
-/* Estilos para telas menores */
+/* ===== Estilos para telas menores ===== */
 @media screen and (max-width: 600px) {
     #search-input {
-        width: 120px; /* Reduz o tamanho do campo de busca */
+        width: 120px;
         font-size: 14px;
     }
 
@@ -87,19 +153,11 @@
         font-size: 14px;
     }
 }
-/* Estilo para centralizar o captcha */
-body {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 100vh;
-	margin: 0;
-	background-color: #f5f5f5;
-	font-family: Arial, sans-serif;
-}
+
+/* ===== Estilo para Centralizar o Captcha ===== */
 .captcha-container {
-	text-align: center;
-	padding: 20px;
-	background-color: white;
-	box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+    text-align: center;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
 }
