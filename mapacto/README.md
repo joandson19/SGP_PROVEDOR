@@ -18,7 +18,12 @@ Siga os passos abaixo para configurar e executar o projeto:
 1. Acesse [Google Cloud Console](https://console.cloud.google.com/).
 2. Crie um projeto e configure suas **APIs e credenciais**.
 3. Adicione o serviço **Google Maps** ao projeto.
-4. Acesse a seção **APIs e Serviços** e ative a **Directions API** para habilitar o traçado de rotas.
+4. Acesse a seção **APIs e Serviços** e ative as seguintes APIs
+*  Maps JavaScript API
+*  Geocoding API
+*  Places API
+*  Directions API
+*  Distance Matrix API
 
 ### 2. Token no SGP
 1. Gere um token no sistema SGP.
