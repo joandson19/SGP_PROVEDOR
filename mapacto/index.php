@@ -16,12 +16,25 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $response = curl_exec($ch);
 curl_close($ch);
 
-// Decodifica o JSON
+// Decodifica o JSON e reduz a carga de dados
 $ctos = json_decode($response, true);
-
 if (!$ctos || !is_array($ctos)) {
     die("Erro ao obter dados da API ou JSON inválido.");
 }
+
+// Remove dados desnecessários do JSON para reduzir o tamanho
+$filteredCtos = array_map(function($cto) {
+    return [
+        'ident' => $cto['ident'],
+        'map_ll' => $cto['map_ll'],
+        'ports' => $cto['ports'],
+        'busy_ports' => $cto['busy_ports'] ?? [],
+        'onu_count' => $cto['onu_count'] ?? 0,
+        'pon' => $cto['pon'],
+        'note' => $cto['note'] ?? '',
+        'id' => $cto['id']
+    ];
+}, $ctos);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,13 +42,14 @@ if (!$ctos || !is_array($ctos)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa de CTOs</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=<?php require_once("config/conf.php"); echo $googleMapsApiKey; ?>&libraries=geometry"></script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo $googleMapsApiKey; ?>&libraries=geometry&callback=initMap"></script>
     <link rel="stylesheet" href="css/style.css"> <!-- Adiciona o link para o CSS -->
     <script>
         let directionsRenderer = null;  // Variável global para armazenar o DirectionsRenderer
         let routeInfoWindow = null;    // Variável global para armazenar o InfoWindow da rota
         let currentMeasurement = null; // Variável para armazenar a medição atual
         let currentMarker = null;      // Variável para armazenar o marcador da medição atual
+		let currentInfoWindow = null; // Variável global para armazenar o InfoWindow atual
 
         function initMap() {
             // Inicializa o mapa
@@ -90,10 +104,14 @@ if (!$ctos || !is_array($ctos)) {
                         `
                     });
 
-                    // Exibe o balão ao clicar no marcador
-                    marker.addListener('click', () => {
-                        infoWindow.open(map, marker);
-                    });
+					// Evento de clique para abrir o InfoWindow (e fechar o anterior)
+					marker.addListener('click', () => {
+						if (currentInfoWindow) {
+							currentInfoWindow.close(); // Fecha o InfoWindow anterior
+						}
+						currentInfoWindow = infoWindow; // Atualiza a referência do InfoWindow atual
+						infoWindow.open(map, marker);
+					});
                 }
             });
 
@@ -205,7 +223,7 @@ if (!$ctos || !is_array($ctos)) {
             const request = {
                 origin: startLocation,
                 destination: currentMarker.getPosition(),
-                travelMode: google.maps.TravelMode.DRIVING
+                travelMode: google.maps.TravelMode.WALKING
             };
 
             directionsService.route(request, (result, status) => {
@@ -249,7 +267,7 @@ if (!$ctos || !is_array($ctos)) {
 <script>
 	// Função para redirecionar para o link desejado
     function redirectTocoveragemap() {
-		window.open("https://www.alagoinhastelecom.com.br/mapacto/cobertura.php", "_blank");
+		window.open("cobertura.php", "_blank");
     }
 </script>
 </body>
