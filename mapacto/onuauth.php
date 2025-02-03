@@ -1,6 +1,12 @@
 <?php
 require_once("config/conf.php");
+session_start();
 
+// Verificar se o captcha foi validado
+if (!isset($_SESSION['validated']) || $_SESSION['validated'] !== true) {
+    header('Location: validar.php');
+    exit;
+}
 // Verificar se todos os parâmetros obrigatórios foram fornecidos
 $olt_id = $_GET['olt_id'] ?? null;
 $splitter = $_GET['cto'] ?? null;
