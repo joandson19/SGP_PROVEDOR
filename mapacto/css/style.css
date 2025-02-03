@@ -55,7 +55,7 @@ body.validar-page {
     border-color: #3498db;
 }
 
-#search-button, #manual-update-btn, #new-table-btn {
+#search-button, #manual-update-btn, #new-table-btn, #update-all {
     background-color: #3498db;
     color: white;
     border: none;
@@ -160,4 +160,73 @@ tr:nth-child(even) {
     padding: 20px;
     background-color: white;
     box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+}
+
+/* ===== Estilo para Pagina de Provisionamento de ONU =====*/
+.provisionamento-onu .container {
+    max-width: 90%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+.provisionamento-onu .onu-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.provisionamento-onu .onu-table th, 
+.provisionamento-onu .onu-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.provisionamento-onu .onu-table th {
+    background-color: #007bff;
+    color: white;
+}
+
+.provisionamento-onu .onu-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.provisionamento-onu .onu-form label {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.provisionamento-onu .onu-form select,
+.provisionamento-onu .onu-form input[type="text"] {
+    width: calc(100% - 10px);
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: block;
+}
+
+
+.provisionamento-onu button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.provisionamento-onu button:hover {
+    background-color: #218838;
+}
+
+/* Estilo para o nome do cliente */
+.cliente-nome {
+	margin-top: 5px;
+	font-weight: bold;
+	color: green;
 }
