@@ -7,32 +7,45 @@ if (!isset($_SESSION['validated']) || $_SESSION['validated'] !== true) {
     header('Location: validar.php');
     exit;
 }
-// API URL
-$url = "$url/api/fttx/splitter/all/?show_busy_ports=1&token=$token&app=$app";
 
-// Inicia o cURL para obter os dados
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-$response = curl_exec($ch);
-curl_close($ch);
+// Função para obter dados da API com tratamento de erros
+function getApiData($url) {
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    if (curl_errno($ch)) {
+        die("Erro ao conectar à API: " . curl_error($ch));
+    }
+    curl_close($ch);
+    return $response;
+}
 
-// Decodifica o JSON e reduz a carga de dados
+// URL da API
+$apiUrl = "$url/api/fttx/splitter/all/?show_busy_ports=1&token=$token&app=$app";
+
+// Obter e decodificar os dados da API
+$response = getApiData($apiUrl);
 $ctos = json_decode($response, true);
+
+if (json_last_error() !== JSON_ERROR_NONE) {
+    die("Erro ao decodificar JSON: " . json_last_error_msg());
+}
+
 if (!$ctos || !is_array($ctos)) {
     die("Erro ao obter dados da API ou JSON inválido.");
 }
 
-// Remove dados desnecessários do JSON para reduzir o tamanho
+// Filtrar e sanitizar dados das CTOs
 $filteredCtos = array_map(function($cto) {
     return [
-        'ident' => $cto['ident'],
-        'map_ll' => $cto['map_ll'],
-        'ports' => $cto['ports'],
-        'busy_ports' => $cto['busy_ports'] ?? [],
-        'onu_count' => $cto['onu_count'] ?? 0,
-        'pon' => $cto['pon'],
-        'note' => $cto['note'] ?? '',
-        'id' => $cto['id']
+        'ident' => htmlspecialchars($cto['ident'] ?? '', ENT_QUOTES, 'UTF-8'),
+        'map_ll' => htmlspecialchars($cto['map_ll'] ?? '', ENT_QUOTES, 'UTF-8'),
+        'ports' => intval($cto['ports'] ?? 0),
+        'busy_ports' => array_map('intval', $cto['busy_ports'] ?? []),
+        'onu_count' => intval($cto['onu_count'] ?? 0),
+        'pon' => htmlspecialchars($cto['pon'] ?? '', ENT_QUOTES, 'UTF-8'),
+        'note' => htmlspecialchars($cto['note'] ?? '', ENT_QUOTES, 'UTF-8'),
+        'id' => intval($cto['id'] ?? 0)
     ];
 }, $ctos);
 ?>
@@ -42,233 +55,243 @@ $filteredCtos = array_map(function($cto) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa de CTOs</title>
-	<script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo $googleMapsApiKey; ?>&libraries=geometry&callback=initMap"></script>
-    <link rel="stylesheet" href="css/style.css"> <!-- Adiciona o link para o CSS -->
-    <script>
-        let directionsRenderer = null;  // Variável global para armazenar o DirectionsRenderer
-        let routeInfoWindow = null;    // Variável global para armazenar o InfoWindow da rota
-        let currentMeasurement = null; // Variável para armazenar a medição atual
-        let currentMarker = null;      // Variável para armazenar o marcador da medição atual
-		let currentInfoWindow = null; // Variável global para armazenar o InfoWindow atual
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo $googleMapsApiKey; ?>&libraries=geometry&callback=initMap"></script>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        #loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body onload="initMap()">
+    <div id="map" style="height: 100vh;"></div>
+    <div id="search-container">
+        <button id="new-table-btn" onclick="clearMeasurements()">Limpar Medições</button>
+        <button id="new-table-btn" onclick="redirectTocoveragemap()">Mapa de Cobertura</button>
+    </div>
+    <div id="loading">Calculando rotas...</div>
 
+    <script>
+        let directionsRenderer = null;
+        let routeInfoWindow = null;
+        let currentMeasurement = null;
+        let currentMarker = null;
+        let currentInfoWindow = null;
+
+		// Função para inicializar o mapa
         function initMap() {
-            // Inicializa o mapa
             const map = new google.maps.Map(document.getElementById('map'), {
-                center: new google.maps.LatLng(<?php echo $centralLatitude; ?>, <?php echo $centralLongitude; ?>), // Coordenadas padrão
+                center: new google.maps.LatLng(<?php echo $centralLatitude; ?>, <?php echo $centralLongitude; ?>),
                 zoom: 15
             });
 
-            // Dados das CTOs
-            const ctos = <?php echo json_encode($ctos); ?>;
+            const ctos = <?php echo json_encode($filteredCtos); ?>;
             const markers = [];
             const ctoLocations = [];
 
-            // Adiciona os marcadores ao mapa e armazena as localizações
+            // Adiciona marcadores ao mapa
             ctos.forEach(cto => {
                 if (cto.map_ll) {
                     const coords = cto.map_ll.split(",");
                     const lat = parseFloat(coords[0].trim());
                     const lng = parseFloat(coords[1].trim());
 
-                    const marker = new google.maps.Marker({
-                        position: { lat: lat, lng: lng },
-                        map: map,
-                        title: cto.ident,
-                        icon: {
-                            url: 'images/cto.png', // Caminho para o seu ícone personalizado
-                            scaledSize: new google.maps.Size(30, 30), // Tamanho do ícone (opcional)
-                            origin: new google.maps.Point(0, 0), // Posição inicial do ícone (opcional)
-                            anchor: new google.maps.Point(15, 15) // Onde o ícone será ancorado (opcional)
-                        }
-                    });
-
-                    // Armazena a localização e o marcador
+                    const marker = createMarker(cto, map, lat, lng);
+                    markers.push(marker);
                     ctoLocations.push({ lat, lng, marker });
 
-			// Mostrar botão de ver sinal caso a CTO tenha cliente, se não tiver o botão não aparecerá.		
-			const buttonHTML = cto.onu_count > 0 
-				? `<button id="new-table-btn" onclick="redirectToOnu(${cto.id})">Ver Sinal</button>` 
-				: '';
+                    const infoWindow = createInfoWindow(cto, marker, map);
+                    marker.addListener('click', () => {
+                        if (currentInfoWindow) {
+                            currentInfoWindow.close();
+                        }
+                        currentInfoWindow = infoWindow;
+                        infoWindow.open(map, marker);
+                    });
+                }
+            });
 
-                    // Adiciona o conteúdo do balão de informações
-                    const infoWindow = new google.maps.InfoWindow({
-                        content: `
-                            <div>
-                                <h2>➡ ${cto.ident} ⬅</h2>
-                                <p><strong>Número de Portas:</strong> ${cto.ports}</p>
-                                <p><strong>Portas ocupadas:</strong><font color="red"> ${cto.busy_ports && cto.busy_ports.length > 0 ? cto.busy_ports.join(', ') : 'Nenhuma'}</font></p>
-                                <p><strong>Observações:</strong> ${cto.note || 'Nenhuma'}</p>
-								<p><strong>OLT PON:</strong> ${cto.pon}</p>
-								${buttonHTML}
-                            </div>
-                        `
+            // Evento de clique no mapa para calcular rotas
+            map.addListener('click', (event) => {
+                const clickedLocation = event.latLng;
+
+                if (currentMeasurement) {
+                    clearMeasurements();
+                }
+
+                currentMeasurement = clickedLocation;
+                currentMarker = createMeasurementMarker(clickedLocation, map);
+
+                google.maps.event.addListener(currentMarker, 'dragend', () => {
+                    currentMeasurement = currentMarker.getPosition();
+                    updateRoute(clickedLocation);
+                });
+
+                calculateShortestRoute(clickedLocation, ctoLocations, map);
+            });
+        }
+
+        // Função para criar um marcador de CTO
+        function createMarker(cto, map, lat, lng) {
+            return new google.maps.Marker({
+                position: { lat, lng },
+                map: map,
+                title: cto.ident,
+                icon: {
+                    url: 'images/cto.png',
+                    scaledSize: new google.maps.Size(30, 30),
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(15, 15)
+                }
+            });
+        }
+
+        // Função para criar um InfoWindow
+        function createInfoWindow(cto, marker, map) {
+			const buttonHTML = (cto.onu_count > 0
+				? `<button id="new-table-btn" onclick="redirectToOnu(${cto.id})">Ver Sinal</button>`
+				: '') +
+				(cto.busy_ports.length < cto.ports
+					? `<button id="new-table-btn" onclick="redirectToOnuAuth(${cto.id}, ${cto.ports}, '${cto.busy_ports}', ${cto.pon})">Autorizar ONU</button>`
+					: `<button id="new-table-btn" disabled title="CTO Lotada - Não é possível autorizar novas ONUs." style="opacity: 0.5; cursor: not-allowed;">Autorizar ONU</button>`);
+		
+			return new google.maps.InfoWindow({
+				content: `
+					<div>
+						<p style="${cto.busy_ports.length >= cto.ports ? 'color: red; animation: blink 1s infinite; text-align: center;' : ''}">
+							${cto.busy_ports.length >= cto.ports ? 'CTO LOTADA' : ''}
+						</p>
+						<h2>➡ ${cto.ident} ⬅</h2>
+						<p><strong>Número de Portas:</strong> ${cto.ports}</p>
+						<p><strong>Portas ocupadas:</strong><font color="red"> ${cto.busy_ports && cto.busy_ports.length > 0 ? cto.busy_ports.join(', ') : 'Nenhuma'}</font></p>
+						<p><strong>Observações:</strong> ${cto.note || 'Nenhuma'}</p>
+						<p><strong>OLT PON:</strong> ${cto.pon}</p>
+						${buttonHTML}
+					</div>
+					<style>
+						@keyframes blink {
+							0% { opacity: 1; }
+							50% { opacity: 0; }
+							100% { opacity: 1; }
+						}
+					</style>
+				`
+			});
+        }
+
+        // Função para criar um marcador de medição
+        function createMeasurementMarker(position, map) {
+            return new google.maps.Marker({
+                position: position,
+                map: map,
+                icon: {
+                    url: 'images/green-icon.png',
+                    scaledSize: new google.maps.Size(30, 30),
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(15, 15)
+                },
+                draggable: false
+            });
+        }
+
+        // Função para calcular a rota mais curta
+        async function calculateShortestRoute(clickedLocation, ctoLocations, map) {
+            showLoading();
+
+            const directionsService = new google.maps.DirectionsService();
+            const routePromises = ctoLocations.map(location => {
+                const request = {
+                    origin: clickedLocation,
+                    destination: new google.maps.LatLng(location.lat, location.lng),
+                    travelMode: google.maps.TravelMode.WALKING
+                };
+
+                return new Promise((resolve, reject) => {
+                    directionsService.route(request, (response, status) => {
+                        if (status === google.maps.DirectionsStatus.OK) {
+                            resolve({ response, distance: response.routes[0].legs[0].distance.value });
+                        } else {
+                            reject(`Erro ao calcular rota para ${location.marker.getTitle()}: ${status}`);
+                        }
+                    });
+                });
+            });
+
+            try {
+                const results = await Promise.all(routePromises);
+                const shortestRoute = results.reduce((shortest, current) =>
+                    current.distance < shortest.distance ? current : shortest, { distance: Infinity }
+                );
+
+                if (shortestRoute.response) {
+                    directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
+                    directionsRenderer.setDirections(shortestRoute.response);
+
+                    const leg = shortestRoute.response.routes[0].legs[0];
+                    const distanceInMeters = leg.distance.value;
+
+                    routeInfoWindow = new google.maps.InfoWindow({
+                        content: `<div><h3>Distância: ${distanceInMeters} metros</h3></div>`
                     });
 
-					// Evento de clique para abrir o InfoWindow (e fechar o anterior)
-					marker.addListener('click', () => {
-						if (currentInfoWindow) {
-							currentInfoWindow.close(); // Fecha o InfoWindow anterior
-						}
-						currentInfoWindow = infoWindow; // Atualiza a referência do InfoWindow atual
-						infoWindow.open(map, marker);
-					});
+                    routeInfoWindow.setPosition(leg.end_location);
+                    routeInfoWindow.open(map);
                 }
-            });
-
-            // Função para calcular a rota para o marcador mais próximo
-			map.addListener('click', (event) => {
-				const clickedLocation = event.latLng;
-
-				if (currentMeasurement) {
-					clearMeasurements(); // Limpa a medição anterior
-				}
-
-				// Armazenar a medição atual
-				currentMeasurement = clickedLocation;
-
-				// Adiciona marcador no local clicado
-				currentMarker = new google.maps.Marker({
-					position: clickedLocation,
-					map: map,
-					icon: {
-						url: 'images/green-icon.png',
-						scaledSize: new google.maps.Size(30, 30),
-						origin: new google.maps.Point(0, 0),
-						anchor: new google.maps.Point(15, 15)
-					},
-					draggable: true // Torna o marcador arrastável
-				});
-
-				// Atualiza a medição ao arrastar o marcador
-				google.maps.event.addListener(currentMarker, 'dragend', function() {
-					currentMeasurement = currentMarker.getPosition();
-					updateRoute(clickedLocation); // Atualiza a rota
-				});
-
-				const directionsService = new google.maps.DirectionsService();
-				let shortestRoute = null;
-				let shortestDistance = Infinity;
-
-				// Calcula rotas para todas as CTOs
-				const calculateRoutes = async () => {
-					const routePromises = ctoLocations.map(location => {
-						const request = {
-							origin: clickedLocation,
-							destination: new google.maps.LatLng(location.lat, location.lng),
-							travelMode: google.maps.TravelMode.WALKING
-						};
-
-						return new Promise((resolve, reject) => {
-							directionsService.route(request, (response, status) => {
-								if (status === google.maps.DirectionsStatus.OK) {
-									resolve({ response, distance: response.routes[0].legs[0].distance.value });
-								} else {
-									reject(`Erro ao calcular rota para ${location.marker.getTitle()}: ${status}`);
-								}
-							});
-						});
-					});
-
-					try {
-						const results = await Promise.all(routePromises);
-						const shortestRoute = results.reduce((shortest, current) =>
-							current.distance < shortest.distance ? current : shortest, { distance: Infinity }
-						);
-
-						if (shortestRoute.response) {
-							directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
-							directionsRenderer.setDirections(shortestRoute.response);
-
-							const leg = shortestRoute.response.routes[0].legs[0];
-							const distanceInMeters = leg.distance.value;
-
-							routeInfoWindow = new google.maps.InfoWindow({
-								content: `<div><h3>Distância: ${distanceInMeters} metros</h3></div>`
-							});
-
-							routeInfoWindow.setPosition(leg.end_location);
-							routeInfoWindow.open(map);
-						}
-					} catch (error) {
-						console.error(error);
-					}
-				};
-				calculateRoutes();
-			});
-
+            } catch (error) {
+                console.error(error);
+            } finally {
+                hideLoading();
+            }
         }
-		// Função para redirecionar para Ver Sinal
-		function redirectToOnu(ctoId) {
-			window.open(`onu.php?cto=${ctoId}`, '_blank');
-		}
-        // Função para limpar as medições (rota e InfoWindow)
+
+        // Função para redirecionar para Ver Sinal
+        function redirectToOnu(ctoId) {
+            window.open(`onu.php?cto=${ctoId}`, '_blank');
+        }
+
+        // Função para redirecionar para Autorizar ONU
+        function redirectToOnuAuth(ctoId, ports, busy_ports, pon) {
+            window.open(`onuauth.php?olt_id=3&cto=${ctoId}&ports=${ports}&occupied_ports=${busy_ports}&ctopon=${pon}`, '_blank');
+        }
+
+        // Função para limpar medições
         function clearMeasurements() {
             if (directionsRenderer) {
-                directionsRenderer.setDirections({ routes: [] }); // Limpa a rota
+                directionsRenderer.setDirections({ routes: [] });
             }
             if (routeInfoWindow) {
-                routeInfoWindow.close(); // Fecha o InfoWindow da rota
+                routeInfoWindow.close();
             }
-
             if (currentMarker) {
-                currentMarker.setMap(null); // Remove o marcador da medição anterior
-                currentMarker = null;  // Limpa o marcador atual
-                currentMeasurement = null; // Limpa a medição atual
+                currentMarker.setMap(null);
+                currentMarker = null;
+                currentMeasurement = null;
             }
         }
 
-        // Função para atualizar a rota com a nova posição do marcador
-        function updateRoute(startLocation) {
-            const directionsService = new google.maps.DirectionsService();
-            const request = {
-                origin: startLocation,
-                destination: currentMarker.getPosition(),
-                travelMode: google.maps.TravelMode.WALKING
-            };
-
-            directionsService.route(request, (result, status) => {
-                if (status === google.maps.DirectionsStatus.OK) {
-                    directionsRenderer.setDirections(result);
-
-                    // Exibe a distância e o tempo estimado da rota
-                    const route = result.routes[0];
-                    const leg = route.legs[0];
-                    const distanceInMeters = leg.distance.value;
-                    const duration = leg.duration.text;
-
-                    routeInfoWindow.setContent(`
-                        <div>
-                            <h3>Distância: ${distanceInMeters} metros</h3>
-                            <!--h3>Duração estimada: ${duration}</h3-->
-                        </div>
-                    `);
-
-                    routeInfoWindow.setPosition(leg.end_location);
-                    routeInfoWindow.open(directionsRenderer.getMap());
-                } else {
-                    console.error('Erro ao calcular a rota:', status);
-                    alert('Não foi possível calcular a rota. Verifique o console para mais detalhes.');
-                }
-            });
+        // Função para mostrar o indicador de carregamento
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
         }
 
-    </script>
-</head>
+        // Função para esconder o indicador de carregamento
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
 
-<body onload="initMap()">
-    <div id="map" style="height: 100vh;"></div>
-	<div id="search-container">
-    <!-- Botão para limpar medições -->
-    <button id="new-table-btn" onclick="clearMeasurements()">Limpar Medições</button>
-	<!-- Adicione o novo botão de redirecionamento -->
-	<button id="new-table-btn" onclick="redirectTocoveragemap()">Mapa de Cobertura</button>
-	</div>
-	
-<script>
-	// Função para redirecionar para o link desejado
-    function redirectTocoveragemap() {
-		window.open("cobertura.php", "_blank");
-    }
-</script>
+        // Função para redirecionar para o mapa de cobertura
+        function redirectTocoveragemap() {
+            window.open("cobertura.php", "_blank");
+        }
+    </script>
 </body>
 </html>
