@@ -72,7 +72,7 @@ $filteredCtos = array_map(function($cto) {
         }
     </style>
 </head>
-<body onload="initMap()">
+<body class="mapa-page" onload="initMap()">
     <div id="map" style="height: 100vh;"></div>
     <div id="search-container">
         <button id="new-table-btn" onclick="clearMeasurements()">Limpar Medições</button>
