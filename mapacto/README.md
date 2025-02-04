@@ -1,10 +1,15 @@
 # Projeto: Mapa de CTOs Ativas no SGP
 
-Este projeto exibe um mapa com informações básicas das CTOs ativas no SGP, como:
+Este projeto exibe um mapa com informações das CTOs ativas no SGP, como:
 - Nome da CTO
 - Número total de portas
 - Portas em uso
 - Comentários e outras informações relevantes
+
+E mais algumas opções como...
+- Ver Sinal RX da Onu
+- Autorizar nova Onu
+
 
 📽️ **Vídeo Demonstrativo**: [Clique aqui para assistir](https://youtu.be/eDK37tSjgfQ)
 
