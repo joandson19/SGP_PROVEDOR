@@ -48,7 +48,8 @@ if (json_last_error() !== JSON_ERROR_NONE || !$data || !is_array($data)) {
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <h1>Informações de RX e Clientes </br> CTO <span style="color: green;"><?php echo htmlspecialchars($data[0]['cto'] ?? 'N/A'); ?></span></h1>
+    <h2>Informações de RX e Clientes</h2>
+	<h4>CTO <span style="color: green;"><?php echo htmlspecialchars($data[0]['cto'] ?? 'N/A'); ?></span></h4>
     <button id="update-all" class="update-all">Atualizar Todos</button>
     <span id="loading-all" class="loading" style="display:none;">🔄 Atualizando todas as ONUs...</span>
 

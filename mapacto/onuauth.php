@@ -79,8 +79,8 @@ if (empty($onus)) {
 </head>
 <body class="provisionamento-onu">
     <div class="container">
-        <h1>ONUs não autorizadas na OLT ID <?php echo htmlspecialchars($olt_id); ?></h1>
-        <!--<h1>CTO <?php echo htmlspecialchars($ctoident); ?></h1>-->
+        <h2>ONUs não autorizadas na <span style="color: green;">PON-<?php echo htmlspecialchars($ctopon); ?></span></h2>
+        <h6><?php echo htmlspecialchars($onus[0]['olt_name']); ?></h6>
         <div id="loading">Autorizando ONU...</div> <!-- Indicador de carregamento -->
         <div id="loadingcl">Buscando Cliente...</div> <!-- Indicador de carregamento -->
         <table class="onu-table">
@@ -127,7 +127,7 @@ if (empty($onus)) {
                             <input type="text" name="contrato" id="contrato" required>
                             <div id="cliente-nome" class="cliente-nome"></div> <!-- Exibe o nome do cliente -->
                         </label>
-                        <label>Porta do Splitter:
+                        <label>Porta da CTO:
                             <select name="splitter_port" required>
                                 <?php for ($i = 1; $i <= $splitter_ports; $i++): ?>
                                     <?php if (!in_array($i, $occupied_ports)): ?>
@@ -145,7 +145,7 @@ if (empty($onus)) {
     </div>
 
     <script>
-        // Função para mostrar o indicador de carregamento correto
+        // Função para mostrar o indicador de carregamento
         function showLoading(loadingType = 'auth') {
             if (loadingType === 'auth') {
                 document.getElementById('loading').style.display = 'block'; // Autorizando ONU
