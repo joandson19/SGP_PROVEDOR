@@ -2,6 +2,11 @@
 require_once("config/conf.php");
 session_start();
 
+// Controlar o cache do navegador
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
 // Verificar se o captcha foi validado
 if (!isset($_SESSION['validated']) || $_SESSION['validated'] !== true) {
     header('Location: validar.php');
@@ -178,6 +183,7 @@ if (empty($onus)) {
                     body: new URLSearchParams({
                         'app': '<?php echo $app; ?>',
                         'token': '<?php echo $token; ?>',
+						'status': '1,4', // Consultando somente cliente ativos ou suspensos
                         'contrato': contrato
                     })
                 })
@@ -185,8 +191,10 @@ if (empty($onus)) {
                 .then(data => {
                     if (data.msg === "Contrato(s) Localizado(s)" && data.contratos.length > 0) {
                         clienteNomeElement.textContent = data.contratos[0].razaoSocial;
+						clienteNomeElement.classList.remove("texto-vermelho");
                     } else {
                         clienteNomeElement.textContent = "Contrato não encontrado.";
+						clienteNomeElement.classList.add("texto-vermelho");
                     }
                 })
                 .catch(error => {

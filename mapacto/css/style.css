@@ -233,3 +233,8 @@ tr:nth-child(even) {
 	font-weight: bold;
 	color: green;
 }
+.texto-vermelho {
+	margin-top: 5px;
+    font-weight: bold;
+	color: red;
+}
