@@ -161,7 +161,7 @@ $filteredCtos = array_map(function($cto) {
 				? `<button id="new-table-btn" onclick="redirectToOnu(${cto.id})">Ver Sinal</button>`
 				: '') +
 				(cto.busy_ports.length < cto.ports
-					? `<button id="new-table-btn" onclick="redirectToOnuAuth(${cto.id}, ${cto.ports}, '${cto.busy_ports}', ${cto.pon})">Autorizar ONU</button>`
+					? `<button id="new-table-btn" onclick="redirectToOnuAuth(${cto.id}, ${cto.ports}, '${cto.busy_ports}', ${cto.pon}, '${cto.ident}')">Autorizar ONU</button>`
 					: `<button id="new-table-btn" disabled title="CTO Lotada - Não é possível autorizar novas ONUs." style="opacity: 0.5; cursor: not-allowed;">Autorizar ONU</button>`);
 		
 			return new google.maps.InfoWindow({
@@ -254,15 +254,63 @@ $filteredCtos = array_map(function($cto) {
         }
 
         // Função para redirecionar para Ver Sinal
-        function redirectToOnu(ctoId) {
-            window.open(`onu.php?cto=${ctoId}`, '_blank');
-        }
+		function redirectToOnu(ctoId) {
+			// Cria um formulário dinamicamente
+			const form = document.createElement('form');
+			form.method = 'POST';
+			form.action = 'onu.php';
+			form.target = '_blank'; // Abre em uma nova aba
+
+			// Cria um input hidden para enviar o ctoId
+			const input = document.createElement('input');
+			input.type = 'hidden';
+			input.name = 'cto';
+			input.value = ctoId;
+
+			// Adiciona o input ao formulário
+			form.appendChild(input);
+
+			// Adiciona o formulário ao corpo do documento
+			document.body.appendChild(form);
+
+			// Submete o formulário
+			form.submit();
+
+			// Remove o formulário do DOM após a submissão
+			document.body.removeChild(form);
+		}
 
         // Função para redirecionar para Autorizar ONU
-        function redirectToOnuAuth(ctoId, ports, busy_ports, pon) {
-            window.open(`onuauth.php?olt_id=3&cto=${ctoId}&ports=${ports}&occupied_ports=${busy_ports}&ctopon=${pon}`, '_blank');
-        }
+		function redirectToOnuAuth(ctoId, ports, busy_ports, pon, ident) {
+			// Cria um formulário dinâmico
+			const form = document.createElement('form');
+			form.method = 'POST';
+			form.action = 'onuauth.php';
+			form.target = '_blank'; // Abre em uma nova aba
 
+			// Adiciona os campos ao formulário
+			const addField = (name, value) => {
+				const input = document.createElement('input');
+				input.type = 'hidden';
+				input.name = name;
+				input.value = value;
+				form.appendChild(input);
+			};
+
+			addField('olt_id', 3);
+			addField('cto', ctoId);
+			addField('ports', ports);
+			addField('occupied_ports', busy_ports);
+			addField('ctopon', pon);
+			addField('ctoident', ident);
+
+			// Adiciona o formulário ao corpo do documento e submete
+			document.body.appendChild(form);
+			form.submit();
+
+			// Remove o formulário após a submissão
+			document.body.removeChild(form);
+		}
         // Função para limpar medições
         function clearMeasurements() {
             if (directionsRenderer) {

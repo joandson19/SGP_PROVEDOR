@@ -8,7 +8,7 @@ if (!isset($_SESSION['validated']) || $_SESSION['validated'] !== true) {
     exit;
 }
 
-$idcto = $_GET['cto'] ?? null;
+$idcto = $_POST['cto'] ?? null;
 
 // Verificar se o ID foi passado e é válido
 if (!$idcto || !is_numeric($idcto)) {
@@ -48,8 +48,7 @@ if (json_last_error() !== JSON_ERROR_NONE || !$data || !is_array($data)) {
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <h1>Informações de RX e Clientes</h1>
-
+    <h1>Informações de RX e Clientes </br> CTO <span style="color: green;"><?php echo htmlspecialchars($data[0]['cto'] ?? 'N/A'); ?></span></h1>
     <button id="update-all" class="update-all">Atualizar Todos</button>
     <span id="loading-all" class="loading" style="display:none;">🔄 Atualizando todas as ONUs...</span>
 

@@ -8,11 +8,12 @@ if (!isset($_SESSION['validated']) || $_SESSION['validated'] !== true) {
     exit;
 }
 // Verificar se todos os parâmetros obrigatórios foram fornecidos
-$olt_id = $_GET['olt_id'] ?? null;
-$splitter = $_GET['cto'] ?? null;
-$splitter_ports = $_GET['ports'] ?? null;
-$occupied_ports = explode(',', $_GET['occupied_ports'] ?? '');
-$ctopon = $_GET['ctopon'] ?? null;
+$olt_id = $_POST['olt_id'] ?? null;
+$splitter = $_POST['cto'] ?? null;
+$splitter_ports = $_POST['ports'] ?? null;
+$occupied_ports = explode(',', $_POST['occupied_ports'] ?? '');
+$ctopon = $_POST['ctopon'] ?? null;
+$ctoident = $_POST['ctoident'];
 
 if (!$olt_id || !$splitter || !$splitter_ports || !$ctopon) {
     die('Erro: Parâmetros obrigatórios não fornecidos.');
@@ -38,32 +39,6 @@ function callAPI($url, $method = 'GET', $data = []) {
     return json_decode($result, true);
 }
 
-// Processar o formulário de autorização
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    try {
-        $data = [
-            'slot' => $_POST['slot'],
-            'pon' => $_POST['pon'],
-            'id' => $_POST['id'],
-            'onutype' => $_POST['onutype'],
-            'mode' => '1',
-            'onutemplate' => $_POST['onutemplate'],
-            'splitter' => $splitter,
-            'splitter_port' => $_POST['splitter_port'],
-            'contrato' => $_POST['contrato']
-        ];
-        $response = callAPI("$url/api/fttx/olt/$olt_id/auth/", 'POST', $data);
-        echo '<script>
-            alert("' . htmlspecialchars($response['msg'] ?? 'Erro desconhecido', ENT_QUOTES, 'UTF-8') . '");
-            window.location.href = "onu.php?cto=' . urlencode($splitter) . '";
-        </script>';
-        exit;
-    } catch (Exception $e) {
-        echo '<script>alert("Erro ao autorizar ONU: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . '");</script>';
-    }
-    exit;
-}
-
 // Listar ONUs não autorizadas e filtrar por PON
 try {
     $onus = callAPI("$url/api/fttx/olt/$olt_id/unauth/");
@@ -74,6 +49,7 @@ try {
     // Listar tipos de ONU e templates
     $onutypes = callAPI("$url/api/fttx/onutype/list/");
     $onutemplates = callAPI("$url/api/fttx/onutemplate/list/");
+	$onumode = callAPI("$url/api/fttx/onumode/list/");
 } catch (Exception $e) {
     die("Erro ao buscar dados da API: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8'));
 }
@@ -101,6 +77,7 @@ try {
 <body class="provisionamento-onu">
     <div class="container">
         <h1>ONUs não autorizadas na OLT ID <?php echo htmlspecialchars($olt_id); ?></h1>
+        <!--<h1>CTO <?php echo htmlspecialchars($ctoident); ?></h1>-->
         <div id="loading">Autorizando ONU...</div> <!-- Indicador de carregamento -->
         <div id="loadingcl">Buscando Cliente...</div> <!-- Indicador de carregamento -->
         <table class="onu-table">
@@ -108,7 +85,7 @@ try {
                 <th>Slot</th>
                 <th>PON</th>
                 <th>ONU ID</th>
-                <th>Autorizar</th>
+                <th>Autorizar em <?php echo htmlspecialchars($ctoident); ?></th>
             </tr>
             <?php foreach ($onus as $onu): ?>
             <tr>
@@ -116,10 +93,12 @@ try {
                 <td><?php echo htmlspecialchars($onu['pon']); ?></td>
                 <td><?php echo htmlspecialchars($onu['id']); ?></td>
                 <td>
-                    <form method="POST" class="onu-form" onsubmit="showLoading('auth')">
+                    <form method="POST" action="provisiona_onu.php" class="onu-form" onsubmit="showLoading('auth')">
                         <input type="hidden" name="slot" value="<?php echo htmlspecialchars($onu['slot']); ?>">
                         <input type="hidden" name="pon" value="<?php echo htmlspecialchars($onu['pon']); ?>">
                         <input type="hidden" name="id" value="<?php echo htmlspecialchars($onu['id']); ?>">
+						<input type="hidden" name="splitter" value="<?php echo htmlspecialchars($splitter); ?>">
+						<input type="hidden" name="olt_id" value="<?php echo htmlspecialchars($olt_id); ?>">
                         <label>Tipo ONU:
                             <select name="onutype" required>
                                 <?php foreach ($onutypes as $type): ?>
@@ -127,6 +106,13 @@ try {
                                 <?php endforeach; ?>
                             </select>
                         </label>
+                        <label>Modo:
+                            <select name="onumode" required>
+                                <?php foreach ($onumode as $mode): ?>
+                                    <option value="<?php echo htmlspecialchars($mode['id']); ?>"><?php echo htmlspecialchars($mode['nome']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </label>						
                         <label>Template:
                             <select name="onutemplate" required>
                                 <?php foreach ($onutemplates as $template): ?>
