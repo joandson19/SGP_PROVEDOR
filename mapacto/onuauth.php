@@ -45,11 +45,14 @@ try {
     $onus = array_filter($onus, function($onu) use ($ctopon) {
         return $onu['pon'] == $ctopon;
     });
-
+if (empty($onus)) {
+        echo "<script>alert('Nenhuma ONU para autorizar na PON-$ctopon.');</script>";
+} else {
     // Listar tipos de ONU e templates
     $onutypes = callAPI("$url/api/fttx/onutype/list/");
     $onutemplates = callAPI("$url/api/fttx/onutemplate/list/");
 	$onumode = callAPI("$url/api/fttx/onumode/list/");
+	}
 } catch (Exception $e) {
     die("Erro ao buscar dados da API: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8'));
 }
