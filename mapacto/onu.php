@@ -83,6 +83,7 @@ if (json_last_error() !== JSON_ERROR_NONE || !$data || !is_array($data)) {
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+			sortTableByPort();
             // Função para atualizar o sinal de uma ONU
             function updateONU(phyAddr, button, callback = null) {
                 const loading = document.getElementById(`loading-${phyAddr}`);
@@ -151,6 +152,19 @@ if (json_last_error() !== JSON_ERROR_NONE || !$data || !is_array($data)) {
                 atualizarProxima(0);
             });
         });
+			// Ordena por ordem crescente
+			function sortTableByPort() {
+				let tabela = document.querySelector("table tbody");
+				let linhas = Array.from(tabela.rows);
+
+				linhas.sort((a, b) => {
+					let valorA = parseInt(a.cells[0].textContent.trim()) || 0;
+					let valorB = parseInt(b.cells[0].textContent.trim()) || 0;
+					return valorA - valorB; // Ordena em ordem crescente
+				});
+
+				linhas.forEach(linha => tabela.appendChild(linha)); // Reordena no DOM
+			}
     </script>
 </body>
 </html>
