@@ -45,7 +45,7 @@ if (json_last_error() !== JSON_ERROR_NONE || !$data || !is_array($data)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Informações de RX e Clientes</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=<?= filemtime('css/style.css'); ?>">
 </head>
 <body>
     <h2>Informações de RX e Clientes</h2>

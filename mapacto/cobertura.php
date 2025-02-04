@@ -54,7 +54,7 @@ $filteredCtos = array_map(function($cto) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa de Cobertura FTTH</title>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo $googleMapsApiKey; ?>&libraries=geometry"></script>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=<?= filemtime('css/style.css'); ?>">
     <style>
         #loading {
             display: none;

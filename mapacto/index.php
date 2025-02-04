@@ -2,6 +2,11 @@
 require_once("config/conf.php");
 session_start();
 
+// Controlar o cache do navegador
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
 // Verificar se o captcha foi validado
 if (!isset($_SESSION['validated']) || $_SESSION['validated'] !== true) {
     header('Location: validar.php');
@@ -57,7 +62,7 @@ $filteredCtos = array_map(function($cto) {
     <title>Mapa de CTOs</title>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo $googleMapsApiKey; ?>&libraries=geometry&callback=initMap"></script>
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=<?= filemtime('css/style.css'); ?>">
     <style>
         #loading {
             display: none;
@@ -168,7 +173,7 @@ $filteredCtos = array_map(function($cto) {
 				content: `
 					<div>
 						<p style="${cto.busy_ports.length >= cto.ports ? 'color: red; animation: blink 1s infinite; text-align: center;' : ''}">
-							${cto.busy_ports.length >= cto.ports ? 'CTO LOTADA' : ''}
+							${cto.busy_ports.length >= cto.ports ? '🚨 CTO LOTADA 🚨' : ''}
 						</p>
 						<h2>➡ ${cto.ident} ⬅</h2>
 						<p><strong>Número de Portas:</strong> ${cto.ports}</p>

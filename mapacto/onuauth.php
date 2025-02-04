@@ -61,7 +61,7 @@ if (empty($onus)) {
 <html>
 <head>
     <title>Provisionamento de ONU</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=<?= filemtime('css/style.css'); ?>">
     <style>
         /* Estilo para o indicador de carregamento */
         #loading, #loadingcl {
