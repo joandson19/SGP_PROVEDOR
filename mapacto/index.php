@@ -62,26 +62,14 @@ $filteredCtos = array_map(function($cto) {
     <title>Mapa de CTOs</title>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo $googleMapsApiKey; ?>&libraries=geometry&callback=initMap"></script>
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
-    <link rel="stylesheet" href="css/style.css?v=<?= filemtime('css/style.css'); ?>">
-    <style>
-        #loading {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css?v=<?php echo filemtime('css/style.css'); ?>">
+
 </head>
 <body class="mapa-page" onload="initMap()">
     <div id="map" style="height: 100vh;"></div>
     <div id="search-container">
         <button id="new-table-btn" onclick="clearMeasurements()">Limpar Medições</button>
-        <button id="new-table-btn" onclick="redirectTocoveragemap()">Mapa de Cobertura</button>
+        <button id="new-table-btn" onclick="redirectToCoverageMap()">Mapa de Cobertura</button>
     </div>
     <div id="loading">Calculando rotas...</div>
 
@@ -162,33 +150,44 @@ $filteredCtos = array_map(function($cto) {
 
         // Função para criar um InfoWindow
         function createInfoWindow(cto, marker, map) {
-			const buttonHTML = (cto.onu_count > 0
-				? `<button id="new-table-btn" onclick="redirectToOnu(${cto.id})">Ver Sinal</button>`
-				: '') +
-				(cto.busy_ports.length < cto.ports
-					? `<button id="new-table-btn" onclick="redirectToOnuAuth(${cto.id}, ${cto.ports}, '${cto.busy_ports}', ${cto.pon}, '${cto.ident}')">Autorizar ONU</button>`
-					: `<button id="new-table-btn" disabled title="CTO Lotada - Não é possível autorizar novas ONUs." style="opacity: 0.5; cursor: not-allowed;">Autorizar ONU</button>`);
-		
+					const buttonHTML = `
+						<button id="new-table-btn"
+							${cto.onu_count > 0 
+								? `onclick="redirectToOnu(${cto.id})"` 
+								: 'disabled class="disabled-btn" title="CTO não possui ONU vinculada."'}>
+							Ver Sinal
+						</button>
+						<button id="new-table-btn"
+							${cto.busy_ports?.length < cto.ports 
+								? `onclick="redirectToOnuAuth(${cto.id}, ${cto.ports}, '${JSON.stringify(cto.busy_ports)}', ${cto.pon}, '${cto.ident}')"`
+								: 'disabled class="disabled-btn" title="CTO Lotada - Não é possível autorizar novas ONUs."'}>
+							Autorizar ONU
+						</button>
+					`;		
 			return new google.maps.InfoWindow({
 				content: `
 					<div>
-						<p style="${cto.busy_ports.length >= cto.ports ? 'color: red; animation: blink 1s infinite; text-align: center;' : ''}">
-							${cto.busy_ports.length >= cto.ports ? '🚨 CTO LOTADA 🚨' : ''}
+						<p class="${cto.busy_ports?.length >= cto.ports ? 'cto-lotada' : ''}">
+							${cto.busy_ports?.length >= cto.ports ? '🚨 CTO LOTADA 🚨' : ''}
 						</p>
 						<h2>➡ ${cto.ident} ⬅</h2>
 						<p><strong>Número de Portas:</strong> ${cto.ports}</p>
-						<p><strong>Portas ocupadas:</strong><font color="red"> ${cto.busy_ports && cto.busy_ports.length > 0 ? cto.busy_ports.join(', ') : 'Nenhuma'}</font></p>
-						<p><strong>Observações:</strong> ${cto.note || 'Nenhuma'}</p>
+						${(cto.busy_ports?.length > 0) 
+						  ? `<p><strong>Total ocupadas:</strong> 
+							  <font color="${
+								(cto.busy_ports?.length + 1 === cto.ports) ? 'orange' : 'green'
+							  }">
+								<span class="${cto.busy_ports?.length === 8 ? 'blink' : ''}">
+								  ${cto.busy_ports?.length}
+								</span>
+							  </font>
+							</p>` 
+						  : ''}
+						<p><strong>Portas ocupadas:</strong><span style="color: red;">${cto.busy_ports && cto.busy_ports.length > 0 ? cto.busy_ports.join(', ') : 'Nenhuma'}</span></p>
+						${cto.note ? `<p><strong>Observações:</strong> ${cto.note}</p>` : ''}
 						<p><strong>OLT PON:</strong> ${cto.pon}</p>
 						${buttonHTML}
 					</div>
-					<style>
-						@keyframes blink {
-							0% { opacity: 1; }
-							50% { opacity: 0; }
-							100% { opacity: 1; }
-						}
-					</style>
 				`
 			});
         }
@@ -233,9 +232,9 @@ $filteredCtos = array_map(function($cto) {
 
 			try {
 				const results = await Promise.all(routePromises);
-				const shortestRoute = results.reduce((shortest, current) =>
-					current.distance < shortest.distance ? current : shortest, { distance: Infinity }
-				);
+				const shortestRoute = results.reduce((shortest, current) => {
+					return current.distance < shortest.distance ? current : shortest;
+				}, { distance: Infinity });
 
 				if (shortestRoute.response) {
 					directionsRenderer = new google.maps.DirectionsRenderer({
@@ -255,7 +254,7 @@ $filteredCtos = array_map(function($cto) {
 					aerialPath = new google.maps.Polyline({
 						path: [leg.start_location, clickedLocation],
 						geodesic: true,
-						strokeColor: "#0000FF", // Cor da rota aérea (azul)
+						strokeColor: "#0000FF",
 						strokeOpacity: 1.0,
 						strokeWeight: 4,
 						map: map
@@ -276,7 +275,7 @@ $filteredCtos = array_map(function($cto) {
 					routeInfoWindow.open(map);
 				}
 			} catch (error) {
-				console.error(error);
+				console.error('Erro ao calcular rota:', error);
 			} finally {
 				hideLoading();
 			}
@@ -368,7 +367,7 @@ $filteredCtos = array_map(function($cto) {
         }
 
         // Função para redirecionar para o mapa de cobertura
-        function redirectTocoveragemap() {
+        function redirectToCoverageMap() {
             window.open("cobertura.php", "_blank");
         }
     </script>

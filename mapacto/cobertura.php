@@ -55,19 +55,6 @@ $filteredCtos = array_map(function($cto) {
     <title>Mapa de Cobertura FTTH</title>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo $googleMapsApiKey; ?>&libraries=geometry"></script>
     <link rel="stylesheet" href="css/style.css?v=<?= filemtime('css/style.css'); ?>">
-    <style>
-        #loading {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-        }
-    </style>
 </head>
 <body class="mapa-page">
     <div id="map" style="height: 100vh;"></div>
