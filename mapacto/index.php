@@ -255,7 +255,7 @@ $filteredCtos = array_map(function($cto) {
 					aerialPath = new google.maps.Polyline({
 						path: [leg.start_location, clickedLocation],
 						geodesic: true,
-						strokeColor: "#0000FF",
+						strokeColor: "#0000FF", // Cor da rota aérea (azul)
 						strokeOpacity: 1.0,
 						strokeWeight: 4,
 						map: map
