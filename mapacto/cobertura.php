@@ -69,7 +69,7 @@ $filteredCtos = array_map(function($cto) {
         }
     </style>
 </head>
-<body>
+<body class="mapa-page">
     <div id="map" style="height: 100vh;"></div>
     <div id="loading">Calculando cobertura...</div>
 
@@ -85,8 +85,6 @@ $filteredCtos = array_map(function($cto) {
                 center: new google.maps.LatLng(<?php echo $centralLatitude; ?>, <?php echo $centralLongitude; ?>),
                 zoom: 15,
             });
-
-            const service = new google.maps.DirectionsService();
 
             // Adiciona marcadores e calcula cobertura para cada CTO
             ctos.forEach(cto => {
@@ -104,7 +102,7 @@ $filteredCtos = array_map(function($cto) {
                         infoWindow.open(map, marker);
                     });
 
-                    calculateCoverage(cto, lat, lng, service, map);
+                    calculateCoverage(cto, lat, lng, map);
                 }
             });
         }
@@ -138,45 +136,23 @@ $filteredCtos = array_map(function($cto) {
             });
         }
 
-		// Função para calcular a cobertura de uma CTO
-		function calculateCoverage(cto, lat, lng, service, map) {
-			const directionsRequests = [];
-			const angles = [0, 90, 180, 270]; // Norte, Leste, Sul, Oeste
-			const distance = 250; // 250 metros
+        // Função para calcular a cobertura de uma CTO
+        function calculateCoverage(cto, lat, lng, map) {
+            const distance = 200; // Raio de 200 metros
 
-			angles.forEach(angle => {
-				const destination = google.maps.geometry.spherical.computeOffset(
-					new google.maps.LatLng(lat, lng),
-					distance,
-					angle
-				);
+            // Cria um círculo ao redor da CTO
+            const circle = new google.maps.Circle({
+                map: map,
+                center: new google.maps.LatLng(lat, lng),
+                radius: distance,
+                fillColor: "#00FF00",
+                fillOpacity: 0.3,
+                strokeColor: "#00FF00",
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+            });
+        }
 
-				const request = {
-					origin: new google.maps.LatLng(lat, lng),
-					destination: destination,
-					travelMode: 'WALKING', // Usar "WALKING" para rotas terrestres
-				};
-
-				directionsRequests.push(service.route(request));
-			});
-
-			Promise.all(directionsRequests)
-				.then(results => {
-					const path = results.map(result => result.routes[0].legs[0].end_location);
-
-					// Cria um polígono baseado nas rotas
-					const polygon = new google.maps.Polygon({
-						map: map,
-						paths: path,
-						fillColor: "#00FF00",
-						fillOpacity: 0.3,
-						strokeColor: "#00FF00",
-						strokeOpacity: 0.8,
-						strokeWeight: 2,
-					});
-				})
-				.catch(err => console.error("Erro ao calcular rotas:", err));
-		}
         // Inicializa o mapa
         window.onload = initMap;
     </script>
