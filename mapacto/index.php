@@ -159,7 +159,7 @@ $filteredCtos = array_map(function($cto) {
 						</button>
 						<button id="new-table-btn"
 							${cto.busy_ports?.length < cto.ports 
-								? `onclick="redirectToOnuAuth(${cto.id}, ${cto.ports}, '${JSON.stringify(cto.busy_ports)}', ${cto.pon}, '${cto.ident}')"`
+								? `onclick="redirectToOnuAuth(${cto.id}, ${cto.ports}, '${cto.busy_ports}', ${cto.pon}, '${cto.ident}')"`
 								: 'disabled class="disabled-btn" title="CTO Lotada - Não é possível autorizar novas ONUs."'}>
 							Autorizar ONU
 						</button>
@@ -183,7 +183,13 @@ $filteredCtos = array_map(function($cto) {
 							  </font>
 							</p>` 
 						  : ''}
-						<p><strong>Portas ocupadas:</strong><span style="color: red;">${cto.busy_ports && cto.busy_ports.length > 0 ? cto.busy_ports.join(', ') : 'Nenhuma'}</span></p>
+						<p><strong>Portas ocupadas:</strong>
+							<span style="color: red;">
+								${cto.busy_ports && cto.busy_ports.length > 0 
+									? [...cto.busy_ports].sort((a, b) => a - b).join(', ') 
+									: 'Nenhuma'}
+							</span>
+						</p>
 						${cto.note ? `<p><strong>Observações:</strong> ${cto.note}</p>` : ''}
 						<p><strong>OLT PON:</strong> ${cto.pon}</p>
 						${buttonHTML}
