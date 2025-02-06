@@ -209,55 +209,78 @@ $filteredCtos = array_map(function($cto) {
         }
 
         // Função para calcular a rota mais curta
-        async function calculateShortestRoute(clickedLocation, ctoLocations, map) {
-            showLoading();
+		async function calculateShortestRoute(clickedLocation, ctoLocations, map) {
+			showLoading();
+			
+			const directionsService = new google.maps.DirectionsService();
+			const routePromises = ctoLocations.map(location => {
+				const request = {
+					origin: clickedLocation,
+					destination: new google.maps.LatLng(location.lat, location.lng),
+					travelMode: google.maps.TravelMode.WALKING
+				};
 
-            const directionsService = new google.maps.DirectionsService();
-            const routePromises = ctoLocations.map(location => {
-                const request = {
-                    origin: clickedLocation,
-                    destination: new google.maps.LatLng(location.lat, location.lng),
-                    travelMode: google.maps.TravelMode.WALKING
-                };
+				return new Promise((resolve, reject) => {
+					directionsService.route(request, (response, status) => {
+						if (status === google.maps.DirectionsStatus.OK) {
+							resolve({ response, distance: response.routes[0].legs[0].distance.value, location });
+						} else {
+							reject(`Erro ao calcular rota para ${location.marker.getTitle()}: ${status}`);
+						}
+					});
+				});
+			});
 
-                return new Promise((resolve, reject) => {
-                    directionsService.route(request, (response, status) => {
-                        if (status === google.maps.DirectionsStatus.OK) {
-                            resolve({ response, distance: response.routes[0].legs[0].distance.value });
-                        } else {
-                            reject(`Erro ao calcular rota para ${location.marker.getTitle()}: ${status}`);
-                        }
-                    });
-                });
-            });
+			try {
+				const results = await Promise.all(routePromises);
+				const shortestRoute = results.reduce((shortest, current) =>
+					current.distance < shortest.distance ? current : shortest, { distance: Infinity }
+				);
 
-            try {
-                const results = await Promise.all(routePromises);
-                const shortestRoute = results.reduce((shortest, current) =>
-                    current.distance < shortest.distance ? current : shortest, { distance: Infinity }
-                );
+				if (shortestRoute.response) {
+					directionsRenderer = new google.maps.DirectionsRenderer({
+						map: map,
+						polylineOptions: {
+							strokeColor: "#0000FF", // Cor da rota terrestre (azul)
+							strokeOpacity: 1.0,
+							strokeWeight: 4
+						}
+					});
+					directionsRenderer.setDirections(shortestRoute.response);
 
-                if (shortestRoute.response) {
-                    directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
-                    directionsRenderer.setDirections(shortestRoute.response);
+					const leg = shortestRoute.response.routes[0].legs[0];
+					const distanceInMeters = leg.distance.value;
+					
+					// Desenha a linha aérea
+					aerialPath = new google.maps.Polyline({
+						path: [leg.start_location, clickedLocation],
+						geodesic: true,
+						strokeColor: "#0000FF",
+						strokeOpacity: 1.0,
+						strokeWeight: 4,
+						map: map
+					});
 
-                    const leg = shortestRoute.response.routes[0].legs[0];
-                    const distanceInMeters = leg.distance.value;
+					// Calculando a distância aérea corretamente
+					const aerialDistance = google.maps.geometry.spherical.computeDistanceBetween(
+						leg.start_location, clickedLocation
+					);
 
-                    routeInfoWindow = new google.maps.InfoWindow({
-                        content: `<div><h3>Distância: ${distanceInMeters} metros</h3></div>`
-                    });
+					const totalDistance = distanceInMeters + aerialDistance;
 
-                    routeInfoWindow.setPosition(leg.end_location);
-                    routeInfoWindow.open(map);
-                }
-            } catch (error) {
-                console.error(error);
-            } finally {
-                hideLoading();
-            }
-        }
+					routeInfoWindow = new google.maps.InfoWindow({
+						content: `<div><h3>Distância total: ${totalDistance.toFixed(2)} metros</h3></div>`
+					});
 
+					routeInfoWindow.setPosition(clickedLocation);
+					routeInfoWindow.open(map);
+				}
+			} catch (error) {
+				console.error(error);
+			} finally {
+				hideLoading();
+			}
+		}
         // Função para redirecionar para Ver Sinal
 		function redirectToOnu(ctoId) {
 			// Cria um formulário dinamicamente
@@ -316,21 +339,24 @@ $filteredCtos = array_map(function($cto) {
 			// Remove o formulário após a submissão
 			document.body.removeChild(form);
 		}
-        // Função para limpar medições
-        function clearMeasurements() {
-            if (directionsRenderer) {
-                directionsRenderer.setDirections({ routes: [] });
-            }
-            if (routeInfoWindow) {
-                routeInfoWindow.close();
-            }
-            if (currentMarker) {
-                currentMarker.setMap(null);
-                currentMarker = null;
-                currentMeasurement = null;
-            }
-        }
-
+		// Função para limpar medições
+		function clearMeasurements() {
+			if (directionsRenderer) {
+				directionsRenderer.setDirections({ routes: [] });
+			}
+			if (routeInfoWindow) {
+				routeInfoWindow.close();
+			}
+			if (currentMarker) {
+				currentMarker.setMap(null);
+				currentMarker = null;
+				currentMeasurement = null;
+			}
+			if (aerialPath) {
+				aerialPath.setMap(null);
+				aerialPath = null;
+			}
+		}
         // Função para mostrar o indicador de carregamento
         function showLoading() {
             document.getElementById('loading').style.display = 'block';
