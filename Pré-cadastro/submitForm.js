@@ -193,6 +193,11 @@ document.addEventListener('DOMContentLoaded', () => {
             mapInput.value = ''; // Limpa o campo de coordenadas
         }
     });
+    centerMapButton.addEventListener('click', () => {
+        const [latitude, longitude] = CONFIG.coordenadasIni.split(',').map(Number);
+        map.setView([latitude, longitude], 14);
+        marker.setLatLng([latitude, longitude]);
+    });
     // Manipulador de envio do formulário
     form.addEventListener('submit', async (event) => {
         event.preventDefault(); // Impede o envio padrão do formulário
