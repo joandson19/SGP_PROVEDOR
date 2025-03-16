@@ -1,0 +1,275 @@
+/* Estilos para o mapa */
+#map {
+    width: 100%;
+    height: 100vh; /* Altura relativa à viewport */
+    position: relative;
+}
+
+/* Estilos para a barra de busca e botões */
+#search-container {
+    position: absolute;
+    bottom: 20px;
+    left: 10px;
+    display: flex;
+    gap: 10px; /* Espaço entre os botões */
+    align-items: center; /* Alinha os itens verticalmente no centro */
+    z-index: 1000; /* Para garantir que a barra fique acima do mapa */
+}
+
+#search-input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    width: 150px; /* Largura fixa para o campo de busca */
+}
+
+#search-input:focus {
+    border-color: #3498db;
+}
+.custon-infowindow footer {
+    margin-top: 10px;
+    padding-top: 5px;
+    border-top: 1px solid #ccc;
+    text-align: center;
+    font-size: 12px;
+    color: blue;
+    background-color: #f9f9f9;
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 5px;
+}
+.custon-infowindow p {
+    margin: 5px 0; /* Ajusta espaçamento entre parágrafos */
+}
+/* Estilização do botão "Consultar ONU" */
+.btn-search-onu {
+    background-color: #28a745; /* Verde para destacar */
+    color: white; /* Texto branco */
+    border: none;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    display: inline-block;
+    text-align: center;
+    width: auto;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-search-onu:hover {
+    background-color: #218838; /* Verde mais escuro ao passar o mouse */
+    transform: scale(1.08);
+}
+
+.btn-search-onu:active {
+    background-color: #1e7e34;
+    transform: scale(0.95);
+}
+
+/* Para centralizar o botão dentro da InfoWindow */
+.custon-infowindow .btn-search-onu {
+    display: block;
+    margin: 10px auto;
+}
+.btn-search-onu.loading {
+    background-color: #ffc107; /* Amarelo */
+    cursor: wait;
+}
+
+/* Modal personalizado */
+.custom-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro levemente transparente */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Conteúdo do modal */
+.custom-modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 650px; /* Mantém um tamanho adequado */
+    position: relative;
+    text-align: left;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Cabeçalho do modal */
+.custom-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Ícone de fechar */
+.custom-close {
+    cursor: pointer;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    transition: 0.3s;
+}
+
+.custom-close:hover {
+    color: red;
+}
+
+/* Corpo do modal */
+.custom-modal-body {
+    margin-top: 10px;
+    max-height: 500px;
+    overflow-y: auto;
+    font-family: "Courier New", monospace;
+    background: #2d2d2d; /* Cinza escuro ao invés de preto puro */
+    color: #f8f8f2;
+    padding: 15px;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    line-height: 1.5;
+    border: 1px solid #444; /* Bordas sutis */
+}
+
+/* Barra de rolagem personalizada */
+.custom-modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-modal-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.custom-modal-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+/* Estilização do "Carregando..." */
+.loading-onu {
+    display: none;
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 10px;
+    color: #fff;
+    background: #007bff;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+#search-button, #manual-update-btn, #new-table-btn, #logoutButton{
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#search-button:hover, #manual-update-btn:hover, #new-table-btn:hover, #logoutButton:hover {
+    background-color: #2980b9;
+}
+
+/* Estilo de carregamento */
+#loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 2000; /* Para garantir que o carregamento esteja no topo */
+}
+
+/* Estilo para o conteúdo do popup */
+.custom-popup-content {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #333;
+    max-width: 320px; /* Garante um tamanho máximo */
+    min-width: 280px; /* Garante um tamanho mínimo */
+    word-wrap: break-word; /* Quebra palavras longas */
+    white-space: normal; /* Garante que o texto não fique numa única linha */
+    overflow-wrap: break-word; /* Quebra corretamente dentro do container */
+    padding: 10px;
+}
+
+/* Ajuste para evitar que conteúdo dentro do popup ultrapasse a área */
+.custom-popup-content p {
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-wrap: break-word;
+    margin: 2px 0; /* Ajusta espaçamento entre parágrafos */
+}
+
+/* Footer do popup */
+.custom-popup-content .custom-popup-footer {
+    margin-top: 10px;
+    padding-top: 5px;
+    border-top: 1px solid #ccc;
+    text-align: center;
+    font-size: 12px;
+    color: blue;
+    background-color: #f9f9f9;
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+/* Ajustes para telas menores */
+@media screen and (max-width: 600px) {
+    .custom-popup-content {
+        font-size: 18px;
+        max-width: 350px;
+        min-width: 300px;
+    }
+
+    .custom-popup-content .custom-popup-footer {
+        font-size: 16px;
+        padding: 12px;
+    }
+
+    .leaflet-popup-content-wrapper {
+        padding: 15px;
+    }
+
+    .leaflet-popup-tip {
+        display: none;
+    }
+}
+
+/* Efeito visual quando o botão de atualização está carregando */
+#manual-update-btn.loading {
+    background-color: #666;
+    cursor: not-allowed;
+}
+
+/* Estilos para telas menores */
+@media screen and (max-width: 600px) {
+    #search-input {
+        width: 120px; /* Reduz o tamanho do campo de busca */
+        font-size: 14px;
+    }
+
+    #search-button, #manual-update-btn, #new-table-btn {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+}
