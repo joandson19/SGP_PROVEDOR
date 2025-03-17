@@ -69,7 +69,7 @@ require_once("config/conf.php");
         // Função para atualizar os marcadores no mapa
         function refreshMarkers() {
             // Exibir o GIF de carregamento
-            document.getElementById('loading').style.display = 'block';
+            //document.getElementById('loading').style.display = 'block';
 
             $.ajax({
                 url: 'atualizar_marcadores.php',
@@ -127,7 +127,7 @@ require_once("config/conf.php");
                             <?php if ($ConsutaOnuAtiva == 1) { ?>
                                 ${item.cto ? `
                                     <div style="text-align: center;">
-                                        <button class="btn-search-onu" data-onuid="${item.onuid}">
+                                        <button class="btn-search-onu" onclick="buscarONU('${item.onuid}')">
                                             🔍 Consultar ONU
                                         </button>
                                     </div>
@@ -172,17 +172,17 @@ require_once("config/conf.php");
         }
 
         // Função para buscar informações da ONU
-        function buscarONU(identificador) {
-            if (!identificador) {
-                alert("Identificador da ONU inválido!");
-                return;
-            }
+		function buscarONU(identificador) {
+			if (!identificador) {
+				alert("Identificador da ONU inválido!");
+				return;
+			}
 
-            let botao = document.querySelector(`button[data-onuid="${identificador}"]`);
-            if (botao) {
-                botao.classList.add("loading");
-                botao.textContent = "Buscando...";
-            }
+			let botao = document.querySelector(`button[onclick="buscarONU('${identificador}')"]`);
+			if (botao) {
+				botao.classList.add("loading");
+				botao.textContent = "Buscando...";
+			}
 
             let url = `<?php echo $url; ?>/api/fttx/onu/${identificador}/info/?token=<?php echo $token; ?>&app=<?php echo $app; ?>`;
 
