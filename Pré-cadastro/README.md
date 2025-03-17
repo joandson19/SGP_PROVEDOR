@@ -21,6 +21,29 @@ Este projeto é uma aplicação web simples para o Pré-cadastro de clientes, co
 
 ## 🚀 Como Usar
 
+## Antes de começar a confugurar o projeto no servidor será necessário antes de tudo configurar o seu nginx ou apache2 para aceitar coleta de localização do usuario.
+
+### No nginx
+```
+# nano /etc/nginx/SEUARQUIVODECONFIGURAÇÃO.conf
+
+add_header Permissions-Policy "geolocation=(self)";
+```
+```
+# service nginx restart
+```
+### No apache2
+```
+# nano /etc/apache2/SEUARQUIVODECONFIGURAÇÃO.conf
+
+<IfModule mod_headers.c>
+    Header set Permissions-Policy "geolocation=(self)"
+</IfModule>
+```
+```
+# service apache2 restart
+```
+## Agora podemos baixar o projeto e configurar.
 ### 1. Clonar o Repositório
 Clone o projeto para sua máquina local
 
