@@ -151,6 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapContainer = document.getElementById('mapContainer');
     const mapElement = document.getElementById('map');
     const mapInput = document.getElementById('map_ll');
+    const getLocationButton = document.getElementById('getLocationButton');
+    const centerMapButton = document.getElementById('centerMapButton');
 
     let map; // Variável para armazenar o mapa
     let marker; // Variável para armazenar o marcador
@@ -193,11 +195,68 @@ document.addEventListener('DOMContentLoaded', () => {
             mapInput.value = ''; // Limpa o campo de coordenadas
         }
     });
+
+    // Evento para coletar a localização atual do usuário
+	getLocationButton.addEventListener('click', () => {
+		if (!map || !marker) {
+			alert('O mapa ainda não foi inicializado. Ative o mapa primeiro.');
+			return;
+		}
+
+		if (navigator.geolocation) {
+			// Feedback visual para o usuário
+			getLocationButton.disabled = true;
+			getLocationButton.textContent = 'Obtendo localização...';
+
+			// Função para redefinir o botão
+			const resetButton = () => {
+				getLocationButton.disabled = false;
+				getLocationButton.textContent = 'Usar minha localização atual';
+			};
+
+			navigator.geolocation.getCurrentPosition(
+				(position) => {
+					const { latitude, longitude } = position.coords;
+					map.setView([latitude, longitude], 14);
+					marker.setLatLng([latitude, longitude]);
+					const coordinates = `${latitude.toFixed(6)},${longitude.toFixed(6)}`;
+					mapInput.value = coordinates; // Salva no campo oculto
+
+					// Redefinir o botão após sucesso
+					resetButton();
+				},
+				(error) => {
+					console.error('Erro ao obter localização:', error);
+					alert('Não foi possível obter sua localização. Por favor, verifique as permissões.');
+
+					// Redefinir o botão após falha
+					resetButton();
+				},
+				{
+					// Opções para a geolocalização
+					timeout: 10000, // Tempo máximo de espera (10 segundos)
+					maximumAge: 0, // Não usar uma localização em cache
+					enableHighAccuracy: true // Tentar obter a localização mais precisa possível
+				}
+			);
+		} else {
+			alert('Geolocalização não é suportada pelo seu navegador.');
+		}
+	});
+    // Evento para centralizar o mapa nas coordenadas iniciais
     centerMapButton.addEventListener('click', () => {
+        if (!map || !marker) {
+            alert('O mapa ainda não foi inicializado. Ative o mapa primeiro.');
+            return;
+        }
+
         const [latitude, longitude] = CONFIG.coordenadasIni.split(',').map(Number);
         map.setView([latitude, longitude], 14);
         marker.setLatLng([latitude, longitude]);
+        const coordinates = `${latitude.toFixed(6)},${longitude.toFixed(6)}`;
+        mapInput.value = coordinates; // Salva no campo oculto
     });
+
     // Manipulador de envio do formulário
     form.addEventListener('submit', async (event) => {
         event.preventDefault(); // Impede o envio padrão do formulário
@@ -208,12 +267,12 @@ document.addEventListener('DOMContentLoaded', () => {
         submitButton.textContent = 'Enviando...'; // Feedback visual opcional
 
         const formData = new FormData(form);
-		
-		// Formatar a data de nascimento
-		const datanascInput = document.getElementById('datanasc').value;
-		if (datanascInput) {
-			formData.set('datanasc', datanascInput); // Garante que o formato seja "YYYY-MM-DD"
-		}
+
+        // Formatar a data de nascimento
+        const datanascInput = document.getElementById('datanasc').value;
+        if (datanascInput) {
+            formData.set('datanasc', datanascInput); // Garante que o formato seja "YYYY-MM-DD"
+        }
 
         // Converte os dados do formulário em um objeto JSON
         const formDataObject = {};
