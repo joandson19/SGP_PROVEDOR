@@ -143,7 +143,34 @@ document.getElementById('cpfcnpj').addEventListener('blur', function () {
 		}
 	}
 });
+// Função para enviar mensagem no Telegram
+async function enviarNotificacaoTelegram(mensagem) {
+    const token = CONFIG.telegramToken; // Token do bot (opcional)
+    const chatId = CONFIG.telegramChatId; // Chat ID (opcional)
+    
+	// Verifica se o token e o Chat ID foram fornecidos
+    if (!token || !chatId) {
+        console.log('Token ou Chat ID do Telegram não fornecidos. Notificação ignorada.');
+        return;
+    }
+	
+    try {
+        const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: mensagem
+            })
+        });
 
+        if (!response.ok) {
+            console.error('Erro ao enviar mensagem no Telegram:', await response.text());
+        }
+    } catch (error) {
+        console.error('Erro ao enviar mensagem no Telegram:', error);
+    }
+}
 // Manipulador de envio do formulário
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registrationForm');
@@ -294,7 +321,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dataToSend) // Envia o objeto correto
             });
-
+			
+            // Envia notificação no Telegram
+            const mensagem = `Novo cadastro realizado!\nNome: ${formDataObject.nome}\nCPF/CNPJ: ${formDataObject.cpfcnpj}\nE-mail: ${formDataObject.email}`;
+            await enviarNotificacaoTelegram(mensagem);
+			
             if (response.ok) {
                 // Sucesso
                 alert('Cadastro realizado com sucesso!');
