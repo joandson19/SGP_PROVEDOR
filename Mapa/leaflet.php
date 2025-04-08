@@ -20,8 +20,8 @@ require_once("config/conf.php");
 <head>
     <title>Mapa SGP</title>
     <!-- Inclua o CSS do Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="css/style.css?v=1116032025" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=1319032025" />
+    <link rel="stylesheet" href="css/style.css?v=1319032025" />
 </head>
 <body>
     <!-- Inicio do JavaScript para exibir o pop-up de boas-vindas -->
@@ -42,9 +42,9 @@ require_once("config/conf.php");
     <div id="map" style="height: 100vh;"></div>
 
     <!-- Inclua a biblioteca Leaflet -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=1319032025"></script>
     <!-- Inclua a biblioteca jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js?v=1319032025"></script>
 
     <script>
         <?php require_once("config/conf.php"); ?>
@@ -52,19 +52,35 @@ require_once("config/conf.php");
         var map; // Variável para o objeto do mapa
         var markers = []; // Array para armazenar os marcadores
 
-        // Função para inicializar o mapa
-        function initMap() {
-            // Configurações iniciais do mapa
-            map = L.map('map').setView([<?php echo $centralLatitude; ?>, <?php echo $centralLongitude; ?>], 15);
+		// Função para inicializar o mapa
+		function initMap() {
+			// Configurações iniciais do mapa
+			map = L.map('map').setView([<?php echo $centralLatitude; ?>, <?php echo $centralLongitude; ?>], 15);
 
-            // Adiciona o tile layer (mapa base)
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
+			// Camada do OpenStreetMap (Mapa de Ruas)
+			var streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+			});
 
-            // Carrega os marcadores
-            refreshMarkers();
-        }
+			// Camada do Google Satélite (requere chave de API)
+			var satelliteMap = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+				attribution: '&copy; Google'
+			});
+			
+			// Adiciona a camada padrão ao mapa
+			streetMap.addTo(map);
+
+			// Controle de troca de camadas
+			var baseMaps = {
+				"Mapa de Ruas": streetMap,
+				"Satélite": satelliteMap			
+			};
+
+			L.control.layers(baseMaps).addTo(map);
+
+			// Carrega os marcadores
+			refreshMarkers();
+		}
 
         // Função para atualizar os marcadores no mapa
         function refreshMarkers() {
@@ -103,7 +119,7 @@ require_once("config/conf.php");
                 // Verifica se latitude e longitude são válidas
                 if (!item.latitude || !item.longitude) return;
 
-                let statusIconUrl = item.statusIcon;
+                let statusIconUrl = item.online ? 'images/green-icon.png' : 'images/red-icon.png';
                 let markerIcon = L.icon({
                     iconUrl: statusIconUrl,
                     iconSize: [32, 32]
@@ -259,6 +275,6 @@ require_once("config/conf.php");
     </div>
 
     <!-- Bootstrap JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js?v=1219032025"></script>
 </body>
 </html>

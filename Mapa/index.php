@@ -105,7 +105,7 @@ require_once("config/conf.php");
 			// Verifica se latitude e longitude são válidas
 			if (!item.latitude || !item.longitude) return;
 
-			let statusIconUrl = item.statusIcon;
+			let statusIconUrl = item.online ? 'images/green-icon.png' : 'images/red-icon.png';
 			let markerIcon = {
 				url: statusIconUrl,
 				scaledSize: new google.maps.Size(32, 32)
@@ -129,6 +129,7 @@ require_once("config/conf.php");
 					${item.ctoport ? `<p>CTO Porta: ${item.ctoport} ⬅️</p>` : ""}
 					${item.info_rx ? `<p>Sinal RX: ${item.info_rx} ⬅️</p>` : ""}
 					<p>IP: <a target="_blank" href="http://${encodeURIComponent(item.ip)}:<?php echo $port; ?>">${item.ip}</a></p>
+					${item.ipv6 ? `<p>IPv6: ${item.ipv6}</p>` : ""}
 					
 					<?php if ( $tecnologia == 1 ) { echo '<footer>
 								${item.cto ? "<p>Cliente Fibra</p>" : "<p>Cliente UTP</p>"}

@@ -115,8 +115,7 @@ function parseClientData($json) {
                 $latitude = $cadastro['endereco_latitude'];
                 $nome = trim($cadastro['nome']);
                 $online = $cadastro['online'] ?? false;
-                $statusIcon = $online ? 'images/green-icon.png' : 'images/red-icon.png';
-
+                
                 $nasPortId = $acctime = $stoptime = $ip = $username = null;
 
                 if (!empty($cadastro['radacct']) && isset($cadastro['radacct'][0]['username'])) {
@@ -125,6 +124,7 @@ function parseClientData($json) {
                     $acctime = $cadastro['radacct'][0]['acctstarttime'] ?? null;
                     $stoptime = $cadastro['radacct'][0]['acctstoptime'] ?? null;
                     $ip = $cadastro['radacct'][0]['framedipaddress'] ?? null;
+					$ipv6 = $cadastro['radacct'][0]['delegatedipv6prefix'] ?? null;
                 }
 
                 $clientData[] = [
@@ -132,11 +132,12 @@ function parseClientData($json) {
                     "longitude" => $longitude,
                     "nome" => $nome,
                     "username" => $username,
-                    "statusIcon" => $statusIcon,
                     "vlan" => $nasPortId,
                     "acct" => formatarData($acctime),
                     "stop" => formatarData($stoptime),
-                    "ip" => $ip
+                    "ip" => $ip,
+					"ipv6" => $ipv6,
+					"online" => $online
                 ];
             } else {
                 // Log para depuração
