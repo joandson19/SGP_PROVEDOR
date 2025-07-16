@@ -15,6 +15,7 @@ if ($mostrarPopup) {
 require_once("config/conf.php");
 
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>

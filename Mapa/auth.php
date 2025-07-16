@@ -13,24 +13,27 @@ $urlauth = "$url/api/auth/info/";
 
 // Função para autenticar via API
 function authenticate($username, $password, $urlauth) {
-    $authHeader = 'Authorization: Basic ' . base64_encode("$username:$password");
+    $ch = curl_init();
 
-    $options = [
-        'http' => [
-            'header'  => $authHeader,
-            'method'  => 'GET',
-        ],
-    ];
+    curl_setopt($ch, CURLOPT_URL, $urlauth);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Authorization: Basic ' . base64_encode("$username:$password")
+    ]);
+    //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Apenas para teste, remova em produção!
 
-    $context  = stream_context_create($options);
-    $result = @file_get_contents($urlauth, false, $context);
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
 
-    if ($result === FALSE) {
-        return false;
+    if ($httpCode === 200 && $response !== false) {
+        return json_decode($response, true);
     }
 
-    return json_decode($result, true);
+    error_log("Falha ao autenticar: HTTP $httpCode, resposta: $response");
+    return false;
 }
+
 
 // Função para proteger páginas
 function requireAuth() {
@@ -43,7 +46,6 @@ function requireAuth() {
         }
     }
 }
-
 // Aplica autenticação automaticamente (exceto na página de login)
 requireAuth();
 ?>
