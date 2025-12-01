@@ -44,6 +44,10 @@
             <select id="vencimento" name="vencimento" required></select>
         </div>
         <div>
+            <label for="logradouro">Cep</label>
+            <input type="text" id="cep" name="cep" placeholder="Digite o CEP sem pontos ou traços" maxlength="8" maxlength="8" pattern="[0-9]*" required>
+        </div>		
+        <div>
             <label for="logradouro">Endereço</label>
             <input type="text" id="logradouro" name="logradouro" placeholder="Digite seu endereço" required>
         </div>
@@ -59,7 +63,7 @@
             <label for="pontoreferencia">Ponto de Referência ou Complemento</label>
             <input type="text" id="pontoreferencia" name="pontoreferencia" placeholder="Digite ..." required>
         </div>
-        <div>
+        <!--<div>
             <label for="cidade">Cidade</label>
             <select id="cidade" name="cidade" required>
                 <option value="Alagoinhas">Alagoinhas</option>
@@ -70,7 +74,16 @@
             <select id="uf" name="uf" required>
                 <option value="BA">Bahia (BA)</option>
             </select>
-        </div>
+        </div>-->
+		<div>
+			<label for="cidade">Cidade</label>
+			<input type="text" id="cidade" name="cidade" placeholder="Cidade" required readonly>
+		</div>
+
+		<div>
+			<label for="uf">Estado (UF)</label>
+			<input type="text" id="uf" name="uf" placeholder="UF" required readonly>
+		</div>
 		<div>
 			<label for="vendedor">Vendedor (opcional)</label>
 			<select id="vendedor" name="vendedor_id">

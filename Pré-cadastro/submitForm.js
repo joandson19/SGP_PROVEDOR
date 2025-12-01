@@ -171,6 +171,41 @@ async function enviarNotificacaoTelegram(mensagem) {
         console.error('Erro ao enviar mensagem no Telegram:', error);
     }
 }
+// ---- AUTO BUSCA DE CEP ---- //
+// Aceitar somente números no CEP
+document.getElementById('cep').addEventListener('input', function () {
+    this.value = this.value.replace(/\D/g, '');
+});
+
+document.getElementById('cep').addEventListener('blur', async function () {
+    let cep = this.value.replace(/\D/g, '');
+
+    if (cep.length !== 8) {
+        alert("CEP inválido! Digite 8 números.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await response.json();
+
+        if (data.erro) {
+            alert("CEP não encontrado!");
+            return;
+        }
+
+        // Preencher os campos do formulário
+        document.getElementById('logradouro').value = data.logradouro || "";
+        document.getElementById('bairro').value = data.bairro || "";
+        document.getElementById('cidade').value = data.localidade || "";
+        document.getElementById('uf').value = data.uf || "";
+
+    } catch (error) {
+        console.error("Erro ao buscar CEP:", error);
+        alert("Erro ao consultar CEP.");
+    }
+});
+
 // Manipulador de envio do formulário
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registrationForm');
