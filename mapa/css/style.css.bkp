@@ -1,0 +1,223 @@
+/* Estilos para o mapa */
+#map {
+    width: 100%;
+    height: 100vh; /* Altura relativa à viewport */
+    position: relative;
+}
+
+/* Estilos para a barra de busca e botões */
+#search-container {
+    position: absolute;
+    bottom: 20px;
+    left: 10px;
+    display: flex;
+    gap: 10px; /* Espaço entre os botões */
+    align-items: center; /* Alinha os itens verticalmente no centro */
+    z-index: 1000; /* Para garantir que a barra fique acima do mapa */
+}
+
+#search-input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    width: 150px; /* Largura fixa para o campo de busca */
+}
+
+#search-input:focus {
+    border-color: #3498db;
+}
+.custon-infowindow footer {
+    margin-top: 10px;
+    padding-top: 5px;
+    border-top: 1px solid #ccc;
+    text-align: center;
+    font-size: 12px;
+    color: blue;
+    background-color: #f9f9f9;
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 5px;
+}
+.custon-infowindow p {
+    margin: 5px 0; /* Ajusta espaçamento entre parágrafos */
+}
+#search-button, #manual-update-btn, #new-table-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#search-button:hover, #manual-update-btn:hover, #new-table-btn:hover {
+    background-color: #2980b9;
+}
+
+/* Modal personalizado */
+.custom-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.custom-modal-content {
+    background-color: white;
+    padding: 15px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px; /* Evita que o modal fique muito grande */
+    position: relative;
+    text-align: center;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.custom-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.custom-close {
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.custom-modal-body {
+    margin-top: 10px;
+    text-align: left;
+    max-height: 400px;
+    overflow-y: auto;
+    font-family: monospace; /* Melhora a exibição do JSON */
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+}
+.btn-search-onu {
+    background-color: #007bff; /* Azul */
+    color: white; /* Texto branco */
+    border: none;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    display: inline-block;
+    text-align: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-search-onu:hover {
+    background-color: #0056b3; /* Azul escuro */
+    transform: scale(1.05);
+}
+
+.btn-search-onu:active {
+    background-color: #004094;
+    transform: scale(0.98);
+}
+
+/* Estilo de carregamento */
+#loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 2000; /* Para garantir que o carregamento esteja no topo */
+}
+
+/* Estilo para o conteúdo do popup */
+.custom-popup-content {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #333;
+    max-width: 320px; /* Garante um tamanho máximo */
+    min-width: 280px; /* Garante um tamanho mínimo */
+    word-wrap: break-word; /* Quebra palavras longas */
+    white-space: normal; /* Garante que o texto não fique numa única linha */
+    overflow-wrap: break-word; /* Quebra corretamente dentro do container */
+    padding: 10px;
+}
+
+/* Ajuste para evitar que conteúdo dentro do popup ultrapasse a área */
+.custom-popup-content p {
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-wrap: break-word;
+    margin: 2px 0; /* Ajusta espaçamento entre parágrafos */
+}
+
+/* Footer do popup */
+.custom-popup-content .custom-popup-footer {
+    margin-top: 10px;
+    padding-top: 5px;
+    border-top: 1px solid #ccc;
+    text-align: center;
+    font-size: 12px;
+    color: blue;
+    background-color: #f9f9f9;
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+/* Ajustes para telas menores */
+@media screen and (max-width: 600px) {
+    .custom-popup-content {
+        font-size: 18px;
+        max-width: 350px;
+        min-width: 300px;
+    }
+
+    .custom-popup-content .custom-popup-footer {
+        font-size: 16px;
+        padding: 12px;
+    }
+
+    .leaflet-popup-content-wrapper {
+        padding: 15px;
+    }
+
+    .leaflet-popup-tip {
+        display: none;
+    }
+}
+
+/* Efeito visual quando o botão de atualização está carregando */
+#manual-update-btn.loading {
+    background-color: #666;
+    cursor: not-allowed;
+}
+
+/* Estilos para telas menores */
+@media screen and (max-width: 600px) {
+    #search-input {
+        width: 120px; /* Reduz o tamanho do campo de busca */
+        font-size: 14px;
+    }
+
+    #search-button, #manual-update-btn, #new-table-btn {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+}
