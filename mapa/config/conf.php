@@ -42,9 +42,9 @@ $CONFIG = [
 
         // SGP
         'sgp' => [
-            'base_url' => $env['SGP_BASE_URL'] ?? 'https://URLSGP.sgp.tsmx.com.br',
-            'token'    => $env['SGP_TOKEN'] ?? 'TOKEN',
-            'app'      => $env['SGP_APP'] ?? 'APP',
+            'base_url' => $env['SGP_BASE_URL'],
+            'token'    => $env['SGP_TOKEN'],
+            'app'      => $env['SGP_APP'],
         ],
 
         // Filtros/pesquisa
