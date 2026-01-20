@@ -30,37 +30,32 @@ Para executar este projeto, seu ambiente deve atender aos seguintes requisitos:
 
 ## ⚙️ Configuração
 
-Toda a configuração sensível e estrutural do sistema está centralizada no arquivo:
-📂 **`config/conf.php`**
+### 1. Renomear Arquivo de Configuração
+Renomeie o arquivo de exemplo `.env.example` para `.env` na raiz do projeto:
 
-Abra este arquivo e ajuste conforme seu ambiente:
-
-### 1. API do SGP
-Configure o acesso à API do seu sistema de gestão:
-```php
-'sgp' => [
-    'base_url' => 'https://seu-sgp.com.br', // URL base do seu SGP
-    'token'    => 'SEU_TOKEN_DE_API',       // Gere um token no SGP
-    'app'      => 'mapa',                   // Nome do app registrado
-],
+```bash
+cp .env.example .env
 ```
 
-### 2. Google Maps
-Insira sua chave de API válida (necessário habilitar Maps JavaScript API, Directions API e Geometry):
-```php
-'google_maps_api_key' => 'SUA_CHAVE_GOOGLE_MAPS',
+### 2. Editar Variáveis de Ambiente
+Abra o arquivo `.env` recém-criado e insira suas credenciais:
+
+```ini
+# Configurações do SGP
+SGP_BASE_URL=https://seu-sgp.com.br
+SGP_TOKEN=SEU_TOKEN_DE_API
+SGP_APP=mapa
+
+# Google Maps
+GOOGLE_MAPS_API_KEY=SUA_CHAVE_GOOGLE_MAPS
+
+# Localização Inicial do Mapa
+MAPA_CENTRAL_LATITUDE=-12.1289
+MAPA_CENTRAL_LONGITUDE=-38.4066
 ```
 
-### 3. Ajustes do Mapa e Filtros
-Defina o centro inicial do mapa e os filtros de busca de clientes:
-```php
-'central_latitude'  => '-12.1289', // Latitude inicial
-'central_longitude' => '-38.4066', // Longitude inicial
-'pesquisa' => [
-    'status' => 'ATIVO', // Filtrar por status do cliente
-    'uf'     => 'BA',    // Filtrar por Estado
-],
-```
+> **Nota de Segurança**: Certifique-se de que o arquivo `.env` não esteja acessível publicamente pelo navegador e configurado no `.gitignore` se usar versionamento.
+
 
 ## 🛠️ Funcionalidades e Uso
 

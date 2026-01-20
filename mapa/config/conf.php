@@ -9,20 +9,42 @@ declare(strict_types=1);
  * - Manter compatibilidade com o código legado (variáveis soltas como $url, $token, etc.)
  */
 
+// Função simples para carregar variáveis do arquivo .env
+function loadEnv($path) {
+    if (!file_exists($path)) {
+        return [];
+    }
+    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    $env = [];
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0) {
+            continue;
+        }
+        if (strpos($line, '=') !== false) {
+            list($name, $value) = explode('=', $line, 2);
+            $env[trim($name)] = trim($value);
+        }
+    }
+    return $env;
+}
+
+// Carregar variáveis de ambiente
+$env = loadEnv(__DIR__ . '/../.env');
+
 $CONFIG = [
     'mapa' => [
         // Coordenadas da localização fixa
-        'central_latitude'  => '-12.1289',
-        'central_longitude' => '-38.4066',
+        'central_latitude'  => $env['MAPA_CENTRAL_LATITUDE'] ?? '-12.1289',
+        'central_longitude' => $env['MAPA_CENTRAL_LONGITUDE'] ?? '-38.4066',
 
         // Google Maps (se aplicável ao seu front)
-        'google_maps_api_key' => 'API GOOGLE MAPS',
+        'google_maps_api_key' => $env['GOOGLE_MAPS_API_KEY'] ?? 'API GOOGLE MAPS',
 
         // SGP
         'sgp' => [
-            'base_url' => 'https://URLSGP.sgp.tsmx.com.br',
-            'token'    => 'TOKEN',
-            'app'      => 'APP',
+            'base_url' => $env['SGP_BASE_URL'] ?? 'https://URLSGP.sgp.tsmx.com.br',
+            'token'    => $env['SGP_TOKEN'] ?? 'TOKEN',
+            'app'      => $env['SGP_APP'] ?? 'APP',
         ],
 
         // Filtros/pesquisa
