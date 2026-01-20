@@ -56,6 +56,21 @@ MAPA_CENTRAL_LONGITUDE=-38.4066
 
 > **Nota de Segurança**: Certifique-se de que o arquivo `.env` não esteja acessível publicamente pelo navegador e configurado no `.gitignore` se usar versionamento.
 
+### 3. Configuração Google Maps API 🔑
+Para que os mapas funcionem corretamente (especialmente o cálculo de rotas e geometria), você precisa de uma Chave de API do Google configurada com as APIs corretas habilitadas.
+
+1.  Acesse o [Google Cloud Console](https://console.cloud.google.com/).
+2.  Crie um novo projeto.
+3.  Vá em **APIs e Serviços > Biblioteca** e ative as seguintes APIs:
+    *   **Maps JavaScript API** (Para exibir os mapas e usar a biblioteca de geometria).
+    *   **Directions API** (Para o cálculo de rotas e distância na tela de CTO).
+4.  Vá em **APIs e Serviços > Credenciais** e crie uma **Chave de API**.
+5.  **Restrições de Aplicação (Recomendado)**:
+    *   Edite sua chave recém-criada.
+    *   Em "Restrições de aplicativos", selecione **Referenciadores HTTP (sites da Web)**.
+    *   Adicione o domínio do seu sistema (ex: `https://seusistema.com/*`).
+6.  Copie a chave gerada e cole no seu arquivo `.env` na variável `GOOGLE_MAPS_API_KEY`.
+
 
 ## 🛠️ Funcionalidades e Uso
 
